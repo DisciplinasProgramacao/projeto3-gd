@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class Estacionamento {
 
-	private String nome;
+    private String nome;
     private Cliente[] clientes;
     private Vaga[] vagas;
     private int quantFileiras;
@@ -57,23 +57,46 @@ public class Estacionamento {
     }
 
 	public double sair(String placa) {
-		
-	}
+        Vaga vagaOcupada = encontrarVagaOcupada(placa);
+        if (vagaOcupada != null) {
+            vagaOcupada.liberar();
+            double valorPago = calcularValorPago(placa);
+            arrecadacaoPorPlaca.put(placa, arrecadacaoPorPlaca.get(placa) + valorPago);
+            return valorPago;
+        }
+        return 0.0;
+    }
 
 	public double totalArrecadado() {
-		
-	}
+        double total = 0.0;
+        for (double valor : arrecadacaoPorPlaca.values()) {
+            total += valor;
+        }
+        return total;
+    }
 
 	public double arrecadacaoNoMes(int mes) {
-		
-	}
+        double totalMes = 0.0;
+        for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {
+            String chave = entry.getKey();
+            int mesEntrada = Integer.parseInt(chave.substring(4, 6));
+            if (mesEntrada == mes) {
+                totalMes += entry.getValue();
+            }
+        }
+        return totalMes;
+    }
 
 	public double valorMedioPorUso() {
-		
-	}
+        if (arrecadacaoPorPlaca.size() == 0) {
+            return 0.0;
+        }
+        return totalArrecadado() / arrecadacaoPorPlaca.size();
+    }
 
 	public String top5Clientes(int mes) {
-		
-	}
+        // Falta colocar a implementacao
+        return "Top 5 clientes do mês " + mes;
+    }
 
 }
