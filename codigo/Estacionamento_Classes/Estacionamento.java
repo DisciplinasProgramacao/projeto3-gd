@@ -1,6 +1,4 @@
-
-[10:36, 04/10/2023] Pedro Silva: Tô subindo pro lab
-[11:49, 04/10/2023] Davi Melo: import java.util.HashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Estacionamento {
