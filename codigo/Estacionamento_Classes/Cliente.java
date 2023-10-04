@@ -1,74 +1,84 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
-import java.time.LocalDate;
-import java.io.*;
-
 public class Cliente {
 
-	private String nome;
-	private String id;
-	private Veiculo[] veiculo;
+    private String nome;
+    private String id;
+    private Veiculo[] veiculo;
 
-
-	public String getId(){
-		return id;
-	}
-
-	public String getNome(){
-		return nome;
-	}
-
-	public Veiculo[] getVeiculo(){
-		return veiculo;
-	}
-
-
-	public Cliente(String nome, String id) {
-		this.nome = nome;
-		this.id = id;
-
-		
-	}
-
-
-	public void addVeiculo(Veiculo[] veiculo) {
-  
-    List<Veiculo> veiculoList = new ArrayList<>();
-    Collections.addAll(veiculoList, veiculo);
-    
-}
-
-	
-	public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("########").append("\n");
-        sb.append("Cliente ID: ").append(id).append("\n");
-        sb.append("Nome: ").append(nome).append("\n");
-        return sb.toString();
+    public String getId() {
+        return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
 
-	public Veiculo possuiVeiculo(String placa) {
+    public Veiculo[] getVeiculo() {
+        return veiculo;
+    }
+
+    
+    public Cliente(String nome, String id) {
+        this.nome = nome;
+        this.id = id;
+        this.veiculo = new Veiculo[10]; 
+    }
+
+    public Cliente() {
+        this.nome = "Anônimo";
+        this.id = "000000"; // Identificador neutro
+        this.veiculo = new Veiculo[10]; // 
+    }
+
+    public void addVeiculo(Veiculo novoVeiculo) {
 		
+		for (int i = 0; i < veiculo.length; i++) {
+			if (veiculo[i] == null) {
+				veiculo[i] = novoVeiculo;
+				return;
+			}
+		}
+		System.out.println("Não há espaço disponível para adicionar um novo veículo.");
 	}
 
-	public int totalDeUsos() {
-		
-	}
+    public Veiculo possuiVeiculo(String placa) {
+        for (Veiculo veiculo : veiculo) {
+            if (veiculo.getPlaca().equals(placa)) {
+                return veiculo;
+            }
+        }
+        return null;
+    }
 
-	public double arrecadadoPorVeiculo(String placa) {
-		
-	}
+    public int totalDeUsos() {
+        int totalUsos = 0;
+        for (Veiculo veiculo : veiculo) {
+            totalUsos += veiculo.getTotalUsos();
+        }
+        return totalUsos;
+    }
 
-	public double arrecadadoTotal() {
-		System.out.println(total);
-	}
+    public double arrecadadoPorVeiculo(String placa) {
+        Veiculo veiculo = possuiVeiculo(placa);
+        if (veiculo != null) {
+            return veiculo.getValorArrecadado();
+        } else {
+            return 0.0;
+        }
+    }
 
-	public double arrecadadoNoMes(int mes) {
-		System.out.println(totalMes);
-	}
+    public double arrecadadoTotal() {
+        double totalArrecadado = 0.0;
+        for (Veiculo veiculo : veiculo) {
+            totalArrecadado += veiculo.getValorArrecadado();
+        }
+        return totalArrecadado;
+    }
 
-
+    public double arrecadadoNoMes(int mes) {
+        double arrecadadoNoMes = 0.0;
+        for (Veiculo veiculo : veiculo) {
+            arrecadadoNoMes += veiculo.getValorArrecadadoNoMes(mes);
+        }
+        return arrecadadoNoMes;
+    }
 }
