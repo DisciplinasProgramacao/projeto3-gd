@@ -9,17 +9,18 @@ public class Veiculo {
 	}
 
 	public void estacionar(Vaga vaga) {
-		if (usos == null) {
-			usos = new UsoDeVaga[1];
-		} else {
-			UsoDeVaga[] newUsos = new UsoDeVaga[usos.length + 1];
-			for (int i = 0; i < usos.length; i++) {
-				newUsos[i] = usos[i];
-			}
-			newUsos[usos.length] = new UsoDeVaga(vaga);
-			usos = newUsos;
-		}
-	}
+        	if (usos == null) {
+            	usos = new UsoDeVaga[1];
+            	usos[0] = new UsoDeVaga(vaga); 
+        	} else {
+            	UsoDeVaga[] newUsos = new UsoDeVaga[usos.length + 1];
+            	for (int i = 0; i < usos.length; i++) {
+                	newUsos[i] = usos[i];
+            	}
+            	newUsos[usos.length] = new UsoDeVaga(vaga); 
+            	usos = newUsos;
+        	}
+    	}
 
 
 	public double sair() {
