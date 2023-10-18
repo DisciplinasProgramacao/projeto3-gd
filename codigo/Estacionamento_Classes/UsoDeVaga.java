@@ -1,46 +1,59 @@
-import java.time.LocalDateTime;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+enum Servico {
+    MANOBRISTA(5.0),
+    LAVAGEM(20.0, 60),
+    POLIMENTO(45.0, 120);
+
+    private final double valor;
+    private final int tempoMinimo;
+
+    Servico(double valor, int tempoMinimo) {
+        this.valor = valor;
+        this.tempoMinimo = tempoMinimo;
+    }
+
+    Servico(double valor) {
+        this(valor, 0);
+    }
+
+    public double getValor() {
+        return valor;
+    }
+
+    public int getTempoMinimo() {
+        return tempoMinimo;
+    }
+}
 
 public class UsoDeVaga {
 
     private static final double FRACAO_USO = 0.25;
     private static final double VALOR_FRACAO = 4.0;
     private static final double VALOR_MAXIMO = 50.0;
-    private static final double VALOR_MANOBRISTA = 5.0;
-    private static final double VALOR_LAVAGEM = 20.0;
-    private static final double VALOR_POLIMENTO = 45.0;
-    private static final int TEMPO_LAVAGEM_MIN = 60;
-    private static final int TEMPO_POLIMENTO_MIN = 120;
 
     private Vaga vaga;
     private LocalDateTime entrada;
     private LocalDateTime saida;
     private double valorPago;
 
-    private boolean manobristaContratado;
-    private boolean lavagemContratada;
-    private boolean polimentoContratado;
+    private List<Servico> servicosContratados;
 
     public UsoDeVaga(Vaga vaga) {
         this.vaga = vaga;
         this.entrada = LocalDateTime.now();
         this.valorPago = 0.0;
-        this.manobristaContratado = false;
-        this.lavagemContratada = false;
-        this.polimentoContratado = false;
+        this.servicosContratados = new ArrayList<>();
     }
 
-    public void contratarManobrista() {
-        this.manobristaContratado = true;
-    }
-
-    public void contratarLavagem() {
-        this.lavagemContratada = true;
-    }
-
-    public void contratarPolimento() {
-        this.polimentoContratado = true;
-        this.lavagemContratada = true; 
+    public void contratarServico(Servico servico) {
+        servicosContratados.add(servico);
+        if (servico == Servico.POLIMENTO) {
+            servicosContratados.add(Servico.LAVAGEM);
+        }
     }
 
     public int getMes() {
@@ -53,27 +66,19 @@ public class UsoDeVaga {
         long minutos = tempoEsta.toMinutes();
         double aPagar = minutos * VALOR_FRACAO * FRACAO_USO;
 
-        if (manobristaContratado) {
-            aPagar += VALOR_MANOBRISTA;
-        }
-        if (lavagemContratada && minutos >= TEMPO_LAVAGEM_MIN) {
-            aPagar += VALOR_LAVAGEM;
-        }
-        if (polimentoContratado && minutos >= TEMPO_POLIMENTO_MIN) {
-            aPagar += VALOR_POLIMENTO;
+        for (Servico servico : servicosContratados) {
+            if (minutos >= servico.getTempoMinimo()) {
+                aPagar += servico.getValor();
+            }
         }
 
-        if (aPagar > VALOR_MAXIMO) {
-            this.valorPago = VALOR_MAXIMO;
-        } else {
-            this.valorPago = aPagar;
-        }
+        this.valorPago = (aPagar > VALOR_MAXIMO) ? VALOR_MAXIMO : aPagar;
 
         vaga.disponivel();
         return valorPago;
     }
 
-    public double valorPago() {
+    public double getValorPago() {
         return valorPago;
     }
 }
