@@ -30,7 +30,7 @@ public class Veiculo {
 	public double totalArrecadado() {
 		double valor = 0;
 		for (int i = 0; i < usos.length;i++){
-			valor += usos[i].valorPago();
+			valor += usos[i].getValorPago();
 		}
 		return valor;
 	}
@@ -38,13 +38,14 @@ public class Veiculo {
 	public double arrecadadoNoMes(int mes) {
 		double valor = 0;
 		for (int i = 0; i < usos.length;i++){
-			if(mes == usos[i].getMes())valor += usos[i].valorPago();
+			if(mes == usos[i].getMes())valor += usos[i].getValorPago();
 		}
 		return valor;
 	}
 
-	public int totalDeUsos() {
+	public int getTotalDeUsos() {
 		return usos.length;
 	}
-
+	public String getPlaca(){return placa;};
 }
+

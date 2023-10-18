@@ -52,7 +52,7 @@ public class Cliente {
     public int totalDeUsos() {
         int totalUsos = 0;
         for (Veiculo veiculo : veiculo) {
-            totalUsos += veiculo.getTotalUsos();
+            totalUsos += veiculo.getTotalDeUsos();
         }
         return totalUsos;
     }
@@ -60,7 +60,7 @@ public class Cliente {
     public double arrecadadoPorVeiculo(String placa) {
         Veiculo veiculo = possuiVeiculo(placa);
         if (veiculo != null) {
-            return veiculo.getValorArrecadado();
+            return veiculo.getTotalDeUsos();
         } else {
             return 0.0;
         }
@@ -69,7 +69,7 @@ public class Cliente {
     public double arrecadadoTotal() {
         double totalArrecadado = 0.0;
         for (Veiculo veiculo : veiculo) {
-            totalArrecadado += veiculo.getValorArrecadado();
+            totalArrecadado += veiculo.totalArrecadado();
         }
         return totalArrecadado;
     }
@@ -77,8 +77,12 @@ public class Cliente {
     public double arrecadadoNoMes(int mes) {
         double arrecadadoNoMes = 0.0;
         for (Veiculo veiculo : veiculo) {
-            arrecadadoNoMes += veiculo.getValorArrecadadoNoMes(mes);
+            arrecadadoNoMes += veiculo.arrecadadoNoMes(mes);
         }
         return arrecadadoNoMes;
     }
+
+
+
+
 }
