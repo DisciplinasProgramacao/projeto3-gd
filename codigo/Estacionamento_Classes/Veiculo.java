@@ -1,3 +1,6 @@
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class Veiculo {
 
@@ -42,6 +45,29 @@ public class Veiculo {
 		}
 		return valor;
 	}
+
+	public String historico(LocalDate i, LocalDate f) {
+		if(i==null && f== null){
+		return "Veiculo{" +
+				"placa='" + placa + '\'' +
+				", usos=" + Arrays.toString(usos) +
+				'}';}
+		else{
+			return "Veiculo{" +
+					"placa='" + placa + '\'' +
+					", usos=" + Arrays.toString(new LinkedList[]{getUsosMes(i, f)}) +
+					'}';}
+	}
+
+	public LinkedList<UsoDeVaga> getUsosMes(LocalDate i, LocalDate f){
+		LinkedList<UsoDeVaga> u = new LinkedList<>();
+		for (int j = 0; j < usos.length;j++){
+			if (usos[j].getEntrada().isAfter(i)||usos[j].getEntrada().isEqual(i)&&usos[j].getEntrada().isBefore(f)||usos[j].getEntrada().isEqual(f))
+				u.add(usos[j]);
+		}
+		return u;
+	}
+
 
 	public int getTotalDeUsos() {
 		return usos.length;
