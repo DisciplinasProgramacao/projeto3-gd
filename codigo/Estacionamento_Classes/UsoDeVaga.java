@@ -3,34 +3,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-enum Servico {
-    MANOBRISTA(5.0),
-    LAVAGEM(20.0, 60),
-    POLIMENTO(45.0, 120);
-
-    private final double valor;
-    private final int tempoMinimo;
-
-    Servico(double valor, int tempoMinimo) {
-        this.valor = valor;
-        this.tempoMinimo = tempoMinimo;
-    }
-
-    Servico(double valor) {
-        this(valor, 0);
-    }
-
-    public double getValor() {
-        return valor;
-    }
-
-    public int getTempoMinimo() {
-        return tempoMinimo;
-    }
-}
-
 public class UsoDeVaga {
-
     private static final double FRACAO_USO = 0.25;
     private static final double VALOR_FRACAO = 4.0;
     private static final double VALOR_MAXIMO = 50.0;
@@ -40,9 +13,35 @@ public class UsoDeVaga {
     private LocalDateTime saida;
     private double valorPago;
 
+    public enum Servico {
+        MANOBRISTA(5.0, 0),
+        LAVAGEM(20.0, 60),
+        POLIMENTO(45.0, 120);
+
+        private double valor;
+        private int tempoMinimo;
+
+        Servico(double valor, int tempoMinimo) {
+            this.valor = valor;
+            this.tempoMinimo = tempoMinimo;
+        }
+
+        public double getValor() {
+            return valor;
+        }
+
+        public int getTempoMinimo() {
+            return tempoMinimo;
+        }
+    }
+
     private List<Servico> servicosContratados;
 
     public UsoDeVaga(Vaga vaga) {
+        if (vaga == null) {
+            throw new IllegalArgumentException("A vaga não pode ser nula.");
+        }
+
         this.vaga = vaga;
         this.entrada = LocalDateTime.now();
         this.valorPago = 0.0;
@@ -50,17 +49,17 @@ public class UsoDeVaga {
     }
 
     public void contratarServico(Servico servico) {
-        servicosContratados.add(servico);
-        if (servico == Servico.POLIMENTO) {
-            servicosContratados.add(Servico.LAVAGEM);
+        if (servico == null) {
+            throw new IllegalArgumentException("Serviço inválido.");
         }
-    }
-
-    public int getMes() {
-        return entrada.getMonthValue();
+        servicosContratados.add(servico);
     }
 
     public double sair() {
+        if (saida != null) {
+            throw new IllegalStateException("O veículo já saiu da vaga.");
+        }
+
         this.saida = LocalDateTime.now();
         Duration tempoEsta = Duration.between(entrada, saida);
         long minutos = tempoEsta.toMinutes();
@@ -79,6 +78,10 @@ public class UsoDeVaga {
     }
 
     public double getValorPago() {
+        if (saida == null) {
+            throw new IllegalStateException("O veículo ainda não saiu da vaga.");
+        }
+
         return valorPago;
     }
-}
+    }
