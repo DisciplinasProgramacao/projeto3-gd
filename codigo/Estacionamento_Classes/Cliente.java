@@ -81,7 +81,12 @@ public class Cliente {
         }
         return arrecadadoNoMes;
     }
-
+	
+    public void Historico(LocalDate i, LocalDate f){
+        for (int j = 0; j < veiculo.length; j++){
+            veiculo[j].historico(i, f);
+        }
+    }
 
 
 
