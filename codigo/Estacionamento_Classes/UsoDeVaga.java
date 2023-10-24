@@ -1,4 +1,5 @@
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +78,10 @@ public class UsoDeVaga {
         return valorPago;
     }
 
+    public int getMes(){
+        return entrada.getMonthValue();
+    }
+
     public double getValorPago() {
         if (saida == null) {
             throw new IllegalStateException("O veículo ainda não saiu da vaga.");
@@ -84,4 +89,8 @@ public class UsoDeVaga {
 
         return valorPago;
     }
+
+    public LocalDate getEntrada() {
+        return entrada.toLocalDate();
     }
+}
