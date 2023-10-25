@@ -1,5 +1,10 @@
+import java.io.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class Estacionamento {
 
@@ -9,7 +14,6 @@ public class Estacionamento {
     private int quantFileiras;
     private int vagasPorFileira;
     private Map<String, Double> arrecadacaoPorPlaca;
-
     public Estacionamento(String nome, int fileiras, int vagasPorFila) {
         this.nome = nome;
         this.quantFileiras = fileiras;
@@ -17,9 +21,25 @@ public class Estacionamento {
         this.clientes = new Cliente[0];
         this.vagas = new Vaga[0];
         this.arrecadacaoPorPlaca = new HashMap<>();
-        gerarVagas();
-        criarCargaDados();
+        gerarVagas(quantFileiras,vagasPorFileira);
+        salvarEstacionamento();
     }
+
+    public Estacionamento(Vaga[] vaga, int fileiras, int vagasPorFileira, String Nome){
+        this.nome=Nome;
+        this.vagas = vaga;
+        this.quantFileiras = fileiras;
+        this.vagasPorFileira = vagasPorFileira;
+        this.clientes=Cliente.carregarClientes(nome);
+        for (int i = 0; i < clientes.length;i++){
+            Veiculo[] vec = clientes[i].getVeiculo();
+            for (int j = 0; j < vec.length;j++){
+                vec[j].setUsos(UsoDeVaga.carregarUsos(vec[j].getPlaca(), vagas));
+            }
+        }
+    }
+
+
 
     public void addVeiculo(Veiculo veiculo, String idCli) {
         Cliente cliente = buscarClientePorId(idCli);
@@ -35,82 +55,38 @@ public class Estacionamento {
         clientes = novosClientes;
     }
 
-    private void gerarVagas() {
-        char fila = 'A';
-        int numeroVaga = 1;
-        int totalVagas = quantFileiras * vagasPorFileira;
-        vagas = new Vaga[totalVagas];
-        for (int i = 0; i < totalVagas; i++) {
-            vagas[i] = new Vaga(String.format("%c%02d", fila, numeroVaga++));
-            if (numeroVaga > vagasPorFileira) {
-                numeroVaga = 1;
-                fila++;
+    private void gerarVagas(int quantFileiras, int vagasPorFileira) {
+        vagas = new Vaga[quantFileiras * vagasPorFileira];
+
+        for (int i = 0; i < quantFileiras; i++) {
+            for (int j = 0; j < vagasPorFileira; j++) {
+                vagas[i * vagasPorFileira + j + 1] = new Vaga(i, j);
+                vagas[i * vagasPorFileira + j + 1].salvarVagas(nome);
             }
         }
     }
 
-    private void criarCargaDados() {
-        // Criar 3 estacionamentos
-        Estacionamento estacionamento1 = new Estacionamento("Estacionamento 1", 5, 10);
-        Estacionamento estacionamento2 = new Estacionamento("Estacionamento 2", 4, 8);
-        Estacionamento estacionamento3 = new Estacionamento("Estacionamento 3", 6, 12);
-
-        // Criar 6 clientes com um veículo cada
-        Cliente cliente1 = new Cliente("Cliente 1");
-        Cliente cliente2 = new Cliente("Cliente 2");
-        Cliente cliente3 = new Cliente("Cliente 3");
-        Cliente cliente4 = new Cliente("Cliente 4");
-        Cliente cliente5 = new Cliente("Cliente 5");
-        Cliente cliente6 = new Cliente("Cliente 6");
-
-        Veiculo veiculo1 = new Veiculo("ABC1234");
-        Veiculo veiculo2 = new Veiculo("DEF5678");
-        Veiculo veiculo3 = new Veiculo("GHI9101");
-        Veiculo veiculo4 = new Veiculo("JKL2345");
-        Veiculo veiculo5 = new Veiculo("MNO6789");
-        Veiculo veiculo6 = new Veiculo("PQR1234");
-
-        cliente1.addVeiculo(veiculo1);
-        cliente2.addVeiculo(veiculo2);
-        cliente3.addVeiculo(veiculo3);
-        cliente4.addVeiculo(veiculo4);
-        cliente5.addVeiculo(veiculo5);
-        cliente6.addVeiculo(veiculo6);
-
-        addCliente(cliente1);
-        addCliente(cliente2);
-        addCliente(cliente3);
-        addCliente(cliente4);
-        addCliente(cliente5);
-        addCliente(cliente6);
-
-        // Distribuir 50 usos de vagas para clientes e estacionamentos
-        for (int i = 0; i < 50; i++) {
-            estacionar(veiculo1.getPlaca());
-            estacionar(veiculo2.getPlaca());
-            estacionar(veiculo3.getPlaca());
-            estacionar(veiculo4.getPlaca());
-            estacionar(veiculo5.getPlaca());
-            estacionar(veiculo6.getPlaca());
-        }
-    }
 
     public void estacionar(String placa) {
         Vaga vagaLivre = encontrarVagaLivre();
         if (vagaLivre != null) {
-            vagaLivre.ocupar();
+            for (int i=0 ; i < clientes.length;i++){
+                Veiculo[] vec = clientes[i].getVeiculo();
+                for (int j = 0; j < vec.length;j++){
+                    if (vec[j].getPlaca()==placa)
+                        vec[j].estacionar(vagaLivre);
+                }}
             arrecadacaoPorPlaca.put(placa, 0.0);
         }
     }
 
     public double sair(String placa) {
-        Vaga vagaOcupada = encontrarVagaOcupada(placa);
-        if (vagaOcupada != null) {
-            vagaOcupada.liberar();
-            double valorPago = calcularValorPago(placa);
-            arrecadacaoPorPlaca.put(placa, arrecadacaoPorPlaca.get(placa) + valorPago);
-            return valorPago;
-        }
+        for (int i=0 ; i < clientes.length;i++){
+            Veiculo[] vec = clientes[i].getVeiculo();
+            for (int j = 0; j < vec.length;j++){
+                if (vec[j].getPlaca()==placa)
+                    return vec[j].sair();
+            }}
         return 0.0;
     }
 
@@ -155,25 +131,55 @@ public class Estacionamento {
         return null;
     }
 
+
     private Vaga encontrarVagaLivre() {
         for (Vaga vaga : vagas) {
-            if (!vaga.isOcupada()) {
+            if (vaga.disponivel()) {
                 return vaga;
             }
         }
         return null;
     }
 
-    private Vaga encontrarVagaOcupada(String placa) {
-        for (Vaga vaga : vagas) {
-            if (vaga.getPlacaEstacionada() != null && vaga.getPlacaEstacionada().equals(placa)) {
-                return vaga;
-            }
-        }
-        return null;
+    public String getNome() {
+        return nome;
     }
 
-    private double calcularValorPago(String placa) {
-        // Lógica de cálculo de valor a ser pago por uso da vaga
-        return 10.0; // Exemplo de valor
+    public Cliente[] getClientes(){
+        return clientes;
+    }
+    public void salvarEstacionamento() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("Estacionamento.txt", true))) {
+            writer.printf(this.nome + ";" + this.quantFileiras +";" + this.vagasPorFileira + "\n");
+            System.out.println("Estacionamento salvo com sucesso!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+
+    }
+
+    public static Estacionamento[] carregarEstacionamento() {
+        LinkedList<Estacionamento> estac = new LinkedList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("Estacionamento.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length == 3) {
+                    String nome = parts[0];
+                    int fileiras = Integer.parseInt(parts[1]);
+                    int vagasf = Integer.parseInt(parts[2]);
+                    Vaga[] vag = Vaga.carregarVagas(nome);
+                    Estacionamento est = new Estacionamento(vag,fileiras, vagasf, nome);
+                        estac.add(est);}
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Estacionamento[] esta = new Estacionamento[estac.size()];
+        estac.toArray(esta);
+        return esta;
+    }
+
+}

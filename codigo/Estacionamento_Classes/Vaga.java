@@ -22,6 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.*;
+import java.util.LinkedList;
 
 /**
  * Classe vaga para sistema de estacionamento. Apenas representa uma vaga e sua disponibilidade.
@@ -46,6 +51,10 @@ public class Vaga {
 		numero = (numero>0&&numero<100)?numero:1;
 		this.id = filas.charAt(fila-1)+String.format("%02d", numero);	
 		this.disponivel = true;
+	}
+
+	public Vaga(String id, boolean disponivel){
+		this.id = id;this.disponivel=disponivel;
 	}
 
 	/**
@@ -116,4 +125,45 @@ public class Vaga {
 		String disp = this.disponivel?"disponível.":"ocupada.";
 		return "Vaga "+this.id+ " "+disp;
 	}
+
+	public Boolean getDisponivel(){return disponivel;}
+
+	public String getId() {
+		return id;
+	}
+
+	public void salvarVagas(String nomeEstac) {
+		try (PrintWriter writer = new PrintWriter(new FileWriter("Vagas.txt", true))) {
+			writer.printf(this.id + ";" + this.disponivel +";" + nomeEstac +"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
+	public static Vaga[] carregarVagas(String nomeEstacionamento) {
+		LinkedList<Vaga> vag = new LinkedList<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader("Vagas.txt"))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(";");
+				if (parts.length == 3) {
+					String id = parts[0];
+					boolean disponivel = Boolean.parseBoolean(parts[1]);
+					String estac = parts[2];
+					if(estac == nomeEstacionamento){
+						Vaga va = new Vaga(id, disponivel);vag.add(va);
+					}
+					}
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Vaga[] vagg = new Vaga[vag.size()];
+		vag.toArray(vagg);
+		return vagg;
+	}
+
 }
