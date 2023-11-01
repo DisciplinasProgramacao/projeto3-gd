@@ -75,36 +75,7 @@ public class Cliente {
      *
      * @param novoVeiculo O veículo a ser adicionado.
      */
-    public void addVeiculo(Veiculo novoVeiculo) {
-        if (veiculo == null) {
-            veiculo = new Veiculo[1];
-            veiculo[0] = novoVeiculo;
-            veiculo[veiculo.length-1].salvarVeiculo(id);
-        } else {
-            Veiculo[] novov = new Veiculo[veiculo.length + 1];
-            for (int i = 0; i < veiculo.length; i++) {
-                novov[i] = veiculo[i];
-            }
-            novov[veiculo.length] = novoVeiculo;
-            veiculo = novov;
-            veiculo[veiculo.length-1].salvarVeiculo(id);
-        }
-    }
-
-    /**
-     * Verifica se o cliente possui um veículo com uma determinada placa.
-     *
-     * @param placa A placa do veículo a ser verificado.
-     * @return O objeto Veiculo se encontrado, ou null se não encontrado.
-     */
-    public Veiculo possuiVeiculo(String placa) {
-        for (Veiculo veiculo : veiculo) {
-            if (veiculo.getPlaca().equals(placa)) {
-                return veiculo;
-            }
-        }
-        return null;
-    }
+   
 
     /**
      * Calcula o total de usos de todos os veículos associados ao cliente.
