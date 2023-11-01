@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.io.BufferedReader;
@@ -80,6 +81,33 @@ public class Veiculo {
 				u.add(usos[j]);
 		}
 		return u;
+	}
+	public void RelatorioOrdenado(int i){
+		UsoDeVaga u[]=usos;
+		for (int j = 0; j < u.length;j++){
+			for (int k = j; k < u.length;k++ ){
+				switch (i){
+					case 1:
+						if (u[k].getValorPago()<u[j].getValorPago()){
+						UsoDeVaga controle = u[j];
+						u[j]=u[k];
+						u[k]=controle;
+						}
+						break;
+					case 2:
+						if (u[k].getEntrada().isAfter(u[j].getEntrada())){
+							UsoDeVaga controle = u[j];
+							u[j]=u[k];
+							u[k]=controle;
+						}
+						break;
+				}
+			}
+		}
+		for (int j = 0; j < u.length; j++){
+			u[j].toString();
+		}
+
 	}
 
 
