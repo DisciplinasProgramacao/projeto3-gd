@@ -22,7 +22,8 @@ public class App {
             System.out.println("#  3. Cadastrar Veiculo                #");
             System.out.println("#  4. Estacionar Veiculo               #");
             System.out.println("#  5. Sair Veiculo                     #");
-            System.out.println("#  6. Sair                             #");
+            System.out.println("#  6. Gerar Relatorios                 #");
+            System.out.println("#  7. Sair                             #");
             System.out.println("########################################");
             escolha = scanner.nextInt();
             int esc = 0;
@@ -54,13 +55,12 @@ public class App {
     }
 
      public static void criarEstacionamento(Estacionamento[] estac){
+        Scanner scanner = new Scanner(System.in);
         if(estac.length == 3){System.out.println("NUMERO MAXIMO ALCANCADO !!");}
             else{
-                scanner.nextLine();
                 System.out.println("Entre com o nome estacionamento: ");
                 String nome = scanner.nextLine();
                 System.out.println("Entre com o numero de fileiras: ");
-                scanner.nextLine();
                 int fileiras = scanner.nextInt();
                 System.out.println("Entre com o nome vagas por fileiras: ");
                 int vagas = scanner.nextInt();
@@ -79,31 +79,45 @@ public class App {
     }
 
     public static void cadastrarCliente(Estacionamento[] estac){
-        int esc2 = 0;
+        Scanner scanner = new Scanner(System.in);
+        int esc = 0;
+        int esc2 =0;
+        int esc3 = 0;
             System.out.println("Selecione o estacionamento:");
             for (int i =0; i < estac.length;i++)
                 System.out.println(i+1 +" "+ estac[i].getNome());
-                esc = scanner.nextInt()-1;
+                esc = scanner.nextInt();
                 System.out.println("Registrar novo cliente. Escolha a opção:");
-                System.out.println("1 para Cliente normal.");
-                System.out.println("2 para Anônimo.");
+                System.out.println("#1# para Cliente Horista.");
+                System.out.println("#2# para Cliente Mensalista.");
+                System.out.println("#3# para Cliente Turno.");
+                System.out.println("#4# para Cliente Anonimo.");
                 esc2 = scanner.nextInt();
                 scanner.nextLine();
-
+                if (esc2 == 3){
+                    System.out.println("Escolha o turno desejado:");
+                    System.out.println("#1# MANHA (8:00 - 12:00).");
+                    System.out.println("#2# TARDE (12:01 - 18:00).");
+                    System.out.println("#3# NOITE (18:01 - 23:59).");
+                    esc3 = scanner.nextInt();
+                }
+                System.out.print("Digite o nome do cliente: ");
+                String nomeCliente = scanner.nextLine();
                 if (esc2 == 1) {
-                    System.out.print("Digite o nome do cliente: ");
-                    String nomeCliente = scanner.nextLine();
-                    Cliente novoCliente = new Cliente(nomeCliente);
-                    estac[esc].addCliente(novoCliente);
+                    Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
+                    estac[esc-1].addCliente(novoCliente);
                 } else if (esc2 == 2) {
-                    Cliente novoCliente = new Cliente();
-                    estac[esc].addCliente(novoCliente);
-                } else {
-                    System.out.println("Opção inválida. Tente novamente.");
+                    Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
+                    estac[esc-1].addCliente(novoCliente);
+                } else if (esc2 == 3) {
+                    Cliente novoCliente = new Cliente(nomeCliente, esc2, esc3);
+                    estac[esc-1].addCliente(novoCliente);
                 }
     }
 
     public static void cadastrarVeiculo(Estacionamento[] estac){
+        Scanner scanner = new Scanner(System.in);
+        int esc;
         String codigCli;
             System.out.println("Selecione o estacionamento:");
             for (int i =0; i < estac.length;i++)
@@ -119,17 +133,15 @@ public class App {
 
                 System.out.println("Insira a placa do veículo:");
                 String placa = scanner.nextLine();
-
                 System.out.println("Insira o modelo do veículo:");
                 String modelo = scanner.nextLine();
-
                 Veiculo novoVeiculo = new Veiculo(placa, modelo);
-
                 estac[esc].addVeiculo(novoVeiculo, codigCli);
-
     }
 
     public static void estacionarVeiculo(Estacionamento[] estac){
+        int esc;
+        Scanner scanner = new Scanner(System.in);
         String placaEstacionar;
             System.out.println("Selecione o estacionamento:");
             for (int i =0; i < estac.length;i++)
@@ -142,6 +154,8 @@ public class App {
     }
 
     public static void sairVeiculo(Estacionamento[] estac){
+        int esc;
+        Scanner scanner = new Scanner(System.in);
         String placaSaida;
             Double valor;
             System.out.println("Selecione o estacionamento:");
@@ -156,7 +170,4 @@ public class App {
 
                 System.out.println("TOTAL A PAGAR: "+ valor);
     }
-
-
-
 }

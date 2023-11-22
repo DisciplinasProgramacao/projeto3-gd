@@ -8,12 +8,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.List;
 
 public class Veiculo {
 
 	private String placa;
 	private String modelo;
-	private UsoDeVaga[] usos;
+	private LinkedList<UsoDeVaga>  usos;
 
 	public Veiculo(String placa, String modelo) {
 		this.placa=placa;
@@ -21,98 +22,115 @@ public class Veiculo {
 	}
 
 
-	public void estacionar(Vaga vaga) {
-		if (usos == null) {
-			usos = new UsoDeVaga[1];
-			usos[0] = new UsoDeVaga(vaga);
-			usos[0].salvarUsoDeVaga(placa);
-		} else {
-			UsoDeVaga[] newUsos = new UsoDeVaga[usos.length + 1];
-			for (int i = 0; i < usos.length; i++) {
-				newUsos[i] = usos[i];
-			}
-			newUsos[usos.length] = new UsoDeVaga(vaga);
-			usos = newUsos;
-			usos[usos.length-1].salvarUsoDeVaga(placa);
+	public void estacionar(Vaga vaga, Turnos turno, int Tipo) {
+		switch (Tipo){
+			case 1:
+				UsoDeVaga newUso = new UsoHora(vaga);
+				usos.add(newUso);
+				break;
+			case 2:
+				UsoDeVaga newUso2 = new UsoMensal(vaga);
+				usos.add(newUso2);
+				break;
+			case 3:
+				UsoDeVaga newUso3 = new UsoTurno(vaga, turno);
+				usos.add(newUso3);
+				break;
 		}
 	}
 
 
-	public void setUsos(UsoDeVaga[] usos){
-		this.usos=usos;
+	public void setUsos(UsoDeVaga[] usos) {
+		if (usos != null) {
+			this.usos = new LinkedList<>(Arrays.asList(usos));
+		} else {
+			throw new IllegalArgumentException("O array de usos não pode ser nulo.");
+		}
 	}
 	public double sair() {
-		return usos[usos.length - 1].sair();
+		usos.getLast().salvarUsoDeVaga(placa);
+		return usos.getLast().sair();
 	}
 
 	public double totalArrecadado() {
 		double valor = 0;
-		for (int i = 0; i < usos.length;i++){
-			valor += usos[i].getValorPago();
+		for (UsoDeVaga uso : usos) {
+			valor += uso.getValorPago();
 		}
 		return valor;
 	}
 
 	public double arrecadadoNoMes(int mes) {
 		double valor = 0;
-		for (int i = 0; i < usos.length;i++){
-			if(mes == usos[i].getMes())valor += usos[i].getValorPago();
+		for (UsoDeVaga uso : usos) {
+			if (mes == uso.getEntrada().getMonthValue()) {
+				valor += uso.getValorPago();
+			}
 		}
 		return valor;
 	}
 
 	public String historico(LocalDate i, LocalDate f) {
-		if(i==null && f== null){
-			return "Veiculo{" +
-					"placa='" + placa + '\'' +
-					", usos=" + Arrays.toString(usos) +
-					'}';}
-		else{
-			return "Veiculo{" +
-					"placa='" + placa + '\'' +
-					", usos=" + Arrays.toString(new LinkedList[]{getUsosMes(i, f)}) +
-					'}';}
+		StringBuilder historico = new StringBuilder("Veiculo{" +
+				"placa='" + placa + '\'' +
+				", usos=[");
+		if (i == null && f == null) {
+			for (UsoDeVaga uso : usos) {
+				historico.append(uso.toString()).append(", ");
+			}
+		} else {
+			LinkedList<UsoDeVaga> usosMes = getUsosMes(i, f);
+			for (UsoDeVaga uso : usosMes) {
+				historico.append(uso.toString()).append(", ");
+			}
+		}
+		if (historico.toString().endsWith(", ")) {
+			historico.setLength(historico.length() - 2);
+		}
+		historico.append("]}");
+		return historico.toString();
 	}
 
-	public LinkedList<UsoDeVaga> getUsosMes(LocalDate i, LocalDate f){
-		LinkedList<UsoDeVaga> u = new LinkedList<>();
-		for (int j = 0; j < usos.length;j++){
-			if (usos[j].getEntrada().isAfter(i)||usos[j].getEntrada().isEqual(i)&&usos[j].getEntrada().isBefore(f)||usos[j].getEntrada().isEqual(f))
-				u.add(usos[j]);
+	public LinkedList<UsoDeVaga> getUsosMes(LocalDate inicio, LocalDate fim) {
+		LinkedList<UsoDeVaga> usosMes = new LinkedList<>();
+		for (UsoDeVaga uso : usos) {
+			if ((uso.getEntrada().isAfter(inicio) || uso.getEntrada().isEqual(inicio))
+					&& (uso.getEntrada().isBefore(fim) || uso.getEntrada().isEqual(fim))) {
+				usosMes.add(uso);
+			}
 		}
-		return u;
+		return usosMes;
 	}
-	public void RelatorioOrdenado(int i){
-		UsoDeVaga u[]=usos;
-		for (int j = 0; j < u.length;j++){
-			for (int k = j; k < u.length;k++ ){
-				switch (i){
+	public void RelatorioOrdenado(int opcao) {
+		List<UsoDeVaga> usosList = usos;
+		for (int i = 0; i < usosList.size(); i++) {
+			for (int j = i; j < usosList.size(); j++) {
+				switch (opcao) {
 					case 1:
-						if (u[k].getValorPago()<u[j].getValorPago()){
-						UsoDeVaga controle = u[j];
-						u[j]=u[k];
-						u[k]=controle;
+						if (usosList.get(j).getValorPago() < usosList.get(i).getValorPago()) {
+							UsoDeVaga controle = usosList.get(i);
+							usosList.set(i, usosList.get(j));
+							usosList.set(j, controle);
 						}
 						break;
 					case 2:
-						if (u[k].getEntrada().isAfter(u[j].getEntrada())){
-							UsoDeVaga controle = u[j];
-							u[j]=u[k];
-							u[k]=controle;
+						if (usosList.get(j).getEntrada().isAfter(usosList.get(i).getEntrada())) {
+							UsoDeVaga controle = usosList.get(i);
+							usosList.set(i, usosList.get(j));
+							usosList.set(j, controle);
 						}
 						break;
 				}
 			}
 		}
-		for (int j = 0; j < u.length; j++){
-			u[j].toString();
+		for (UsoDeVaga uso : usosList) {
+			System.out.println(uso.toString());
 		}
-
 	}
 
 
 	public int getTotalDeUsos() {
-		return usos.length;
+		return usos.size();
 	}
 	public String getPlaca(){return placa;}
 

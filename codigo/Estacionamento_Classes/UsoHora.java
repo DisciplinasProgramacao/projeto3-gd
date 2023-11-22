@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -22,8 +25,26 @@ public class UsoHora extends UsoDeVaga {
         double aPagar = minutos * VALOR_FRACAO;
 
         this.valorPago = (aPagar > VALOR_MAXIMO) ? VALOR_MAXIMO : aPagar;
-
+        this.valorPago += getValorServicos();
         vaga.sair();
         return valorPago;
     }
+
+    @Override
+    public void salvarUsoDeVaga(String placa) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("UsoVaga.txt", true))) {
+            writer.printf("%s;%s;%s;%s;%s;%d;%s\n",
+                    this.vaga.getId(),
+                    this.entrada,
+                    this.saida,
+                    this.valorPago,
+                    placa,
+                    1,  // Código para indicar UsoHora
+                    0);
+            System.out.println("Uso de vaga salvo com sucesso!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 /**
  * Enum que define os serviços disponíveis.
  */
-public enum Servico {
+enum Servico {
     MANOBRISTA(5.0, 0),
     LAVAGEM(20.0, 60),
     POLIMENTO(45.0, 120);
@@ -43,15 +43,11 @@ public enum Servico {
 /**
  * Classe principal que representa o uso de uma vaga de estacionamento.
  */
-public class UsoDeVaga {
-    private static final double FRACAO_USO = 0.25;
-    private static final double VALOR_FRACAO = 4.0;
-    private static final double VALOR_MAXIMO = 50.0;
-
-    private Vaga vaga;
-    private LocalDateTime entrada;
-    private LocalDateTime saida;
-    private double valorPago;
+public abstract class UsoDeVaga {
+    protected Vaga vaga;
+    protected LocalDateTime entrada;
+    protected LocalDateTime saida;
+    protected double valorPago;
 
     private List<Servico> servicosContratados;
 
@@ -92,28 +88,7 @@ public class UsoDeVaga {
      * @return O valor a ser pago.
      * @throws IllegalStateException Se o veículo já saiu da vaga.
      */
-    public double sair() {
-        if (saida != null) {
-            throw new IllegalStateException("O veículo já saiu da vaga.");
-        }
-
-        this.saida = LocalDateTime.now();
-        Duration tempoEsta = Duration.between(entrada, saida);
-        long minutos = tempoEsta.toMinutes();
-        double aPagar = minutos * VALOR_FRACAO * FRACAO_USO;
-
-        for (Servico servico : servicosContratados) {
-            if (minutos >= servico.getTempoMinimo()) {
-                aPagar += servico.getValor();
-            }
-        }
-
-        this.valorPago = (aPagar > VALOR_MAXIMO) ? VALOR_MAXIMO : aPagar;
-
-        vaga.sair();
-        return valorPago;
-    }
-
+    public abstract double sair();
     /**
      * Método para obter o mês de entrada.
      *
@@ -137,6 +112,13 @@ public class UsoDeVaga {
         return valorPago;
     }
 
+    public double getValorServicos(){
+        double total = 0;
+        for (int i = 0; i < servicosContratados.size();i++)
+            total+=servicosContratados.get(i).getValor();
+        return total;
+    }
+
     /**
      * Método para obter a data de entrada.
      *
@@ -151,14 +133,7 @@ public class UsoDeVaga {
      *
      * @param placa A placa do veículo.
      */
-    public void salvarUsoDeVaga(String placa) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("UsoVaga.txt", true)) {
-            writer.printf(this.vaga.getId() + ";" + this.entrada + ";" + this.saida + ";" + this.valorPago + ";" + placa + "\n");
-            System.out.println("Uso de vaga salvo com sucesso!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void salvarUsoDeVaga(String placa);
 
     /**
      * Método estático para carregar usos de vaga a partir de um arquivo.
@@ -173,17 +148,35 @@ public class UsoDeVaga {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 5) {
+                if (parts.length == 7) {
                     String vagaID = parts[0];
                     LocalDateTime entrada = LocalDateTime.parse(parts[1]);
                     LocalDateTime saida = LocalDateTime.parse(parts[2]);
                     double valorPago = Double.parseDouble(parts[3]);
                     String plac = parts[4];
+                    int codigoTipoUso = Integer.parseInt(parts[5]);
+                    int codigoTurno = Integer.parseInt(parts[6]);
 
                     if (plac.equals(placa)) {
                         for (int i = 0; i < vagas.length; i++) {
                             if (vagaID.equals(vagas[i].getId())) {
-                                UsoDeVaga uso = new UsoDeVaga(vagas[i]);
+                                UsoDeVaga uso;
+
+                                switch (codigoTipoUso) {
+                                    case 1:
+                                        uso = new UsoHora(vagas[i]);
+                                        break;
+                                    case 2:
+                                        uso = new UsoMensal(vagas[i]);
+                                        break;
+                                    case 3:
+                                        Turnos turno = Turnos.values()[codigoTurno - 1]; // Ajuste para obter o enum Turnos
+                                        uso = new UsoTurno(vagas[i], turno);
+                                        break;
+                                    default:
+                                        throw new IllegalArgumentException("Código de tipo de uso desconhecido: " + codigoTipoUso);
+                                }
+
                                 uso.entrada = entrada;
                                 uso.saida = saida;
                                 uso.valorPago = valorPago;

@@ -53,6 +53,7 @@ public class Estacionamento {
         System.arraycopy(clientes, 0, novosClientes, 0, clientes.length);
         novosClientes[clientes.length] = cliente;
         clientes = novosClientes;
+        clientes[clientes.length-1].salvarCliente(nome);
     }
 
     private void gerarVagas(int quantFileiras, int vagasPorFileira) {
@@ -60,8 +61,8 @@ public class Estacionamento {
 
         for (int i = 0; i < quantFileiras; i++) {
             for (int j = 0; j < vagasPorFileira; j++) {
-                vagas[i * vagasPorFileira + j + 1] = new Vaga(i, j);
-                vagas[i * vagasPorFileira + j + 1].salvarVagas(nome);
+                vagas[i + j] = new Vaga(i+1, j + 1);
+                vagas[i + j].salvarVagas(nome);
             }
         }
     }

@@ -14,6 +14,8 @@ public class Cliente {
     private String nome;
     private String id;
     private IUsuario IU;
+    private int turno;
+    private int tipo;
 
     /**
      * Um array de objetos Veiculo associados ao cliente.
@@ -52,7 +54,9 @@ public class Cliente {
      *
      * @param nome O nome do cliente.
      */
-    public Cliente(String nome, int tipo) {
+    public Cliente(String nome, int tipo, int turno) {
+        this.turno=turno;
+        this.tipo = tipo;
         this.nome = nome;
         this.id = gerarIDAleatorio();
         switch (tipo){
@@ -63,15 +67,29 @@ public class Cliente {
                 this.IU=new IMes();
                 break;
             case 3:
-                this.IU=new ITurno();
+                this.IU=new ITurno(turno);
         }
+
 
     }
 
-    public Cliente(String nome, String id, Veiculo[] veiculo){
+    public Cliente(String nome, String id, Veiculo[] veiculo, int tipo, int turno){
        this.nome = nome;
        this.id=id;
        this.veiculo = veiculo;
+       this.turno = turno;
+       this.tipo = tipo;
+        switch (tipo){
+            case 1:
+                this.IU = new IHora();
+                break;
+            case 2:
+                this.IU=new IMes();
+                break;
+            case 3:
+                this.IU=new ITurno(turno);
+        }
+
     }
 
     /**
@@ -82,7 +100,26 @@ public class Cliente {
         this.id = "000000"; // Identificador neutro
     }
 
-    void estacionar(String placa, Vaga vaga){
+    public void setTurno(int turno){
+        this.IU=new ITurno(turno);
+    }
+
+    public void setTipo(int tipo, int turno){
+        this.turno = turno;
+        this.tipo = tipo;
+        switch (tipo){
+            case 1:
+                this.IU = new IHora();
+                break;
+            case 2:
+                this.IU=new IMes();
+                break;
+            case 3:
+                this.IU=new ITurno(turno);
+        }
+    }
+
+    public void estacionar(String placa, Vaga vaga){
         for (int i = 0; i < veiculo.length; i++) {
             if (veiculo[i].getPlaca()==placa)IU.estacionar(vaga, veiculo[i]);
         }
@@ -203,7 +240,7 @@ public class Cliente {
 
     public void salvarCliente(String Id) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("Clientes.txt", true))) {
-            writer.printf(this.nome + ";" + this.id + ";" + Id + "\n");
+            writer.printf(this.nome + ";" + this.id + ";" + Id + ";" + this.tipo + ";"+this.turno +"\n");
             System.out.println("Cliente salvo com sucesso!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -218,13 +255,15 @@ public class Cliente {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 3) {
+                if (parts.length == 5) {
                     String nome = parts[0];
                     String id = parts[1];
                     String Estacionamento = parts[2];
+                    int tipo = Integer.parseInt(parts[3]);
+                    int turno = Integer.parseInt(parts[4]);
                     if(Estacionamento == nomeEstacionamento ){
                         Veiculo[] vec = Veiculo.carregarVeiculos(id);
-                        Cliente cli = new Cliente(nome, id, vec);
+                        Cliente cli = new Cliente(nome, id, vec, tipo, turno);
                         clientes.add(cli);}
                 }
             }
