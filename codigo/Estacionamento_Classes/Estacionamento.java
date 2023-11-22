@@ -71,11 +71,8 @@ public class Estacionamento {
         Vaga vagaLivre = encontrarVagaLivre();
         if (vagaLivre != null) {
             for (int i=0 ; i < clientes.length;i++){
-                Veiculo[] vec = clientes[i].getVeiculo();
-                for (int j = 0; j < vec.length;j++){
-                    if (vec[j].getPlaca()==placa)
-                        vec[j].estacionar(vagaLivre);
-                }}
+                clientes[i].estacionar(placa, vagaLivre);
+            }
             arrecadacaoPorPlaca.put(placa, 0.0);
         }
     }

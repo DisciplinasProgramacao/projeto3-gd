@@ -13,6 +13,7 @@ public class Cliente {
 
     private String nome;
     private String id;
+    private IUsuario IU;
 
     /**
      * Um array de objetos Veiculo associados ao cliente.
@@ -51,9 +52,20 @@ public class Cliente {
      *
      * @param nome O nome do cliente.
      */
-    public Cliente(String nome) {
+    public Cliente(String nome, int tipo) {
         this.nome = nome;
         this.id = gerarIDAleatorio();
+        switch (tipo){
+            case 1:
+                this.IU = new IHora();
+                break;
+            case 2:
+                this.IU=new IMes();
+                break;
+            case 3:
+                this.IU=new ITurno();
+        }
+
     }
 
     public Cliente(String nome, String id, Veiculo[] veiculo){
@@ -68,6 +80,12 @@ public class Cliente {
     public Cliente() {
         this.nome = "Anônimo";
         this.id = "000000"; // Identificador neutro
+    }
+
+    void estacionar(String placa, Vaga vaga){
+        for (int i = 0; i < veiculo.length; i++) {
+            if (veiculo[i].getPlaca()==placa)IU.estacionar(vaga, veiculo[i]);
+        }
     }
 
     /**
