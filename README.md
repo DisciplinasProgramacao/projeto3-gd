@@ -6,7 +6,7 @@ Escreva um ou dois parágrafos resumindo o objetivo do seu projeto.
 
 * Pedro Moreira Ramos
 * Augusto de Souza Andrade
-* Nome completo do aluno 3
+* Pedro Arthur Oliveira Silva
 * Nome completo do aluno 4
 * Nome completo do aluno 4
 * Nome completo do aluno 4
