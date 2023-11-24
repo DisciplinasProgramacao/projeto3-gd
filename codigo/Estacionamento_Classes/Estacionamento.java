@@ -96,6 +96,45 @@ public class Estacionamento {
         return total;
     }
 
+    public void arrecadacaoTotalDecrescente(){
+        LinkedList<UsoDeVaga> usos = null;
+        for (Cliente cliente : clientes) {
+            if (cliente != null) {
+                usos.addAll(cliente.relatorioTotalDecrescente());
+            };
+        }
+        usos.sort((uso1, uso2) -> Long.compare((long) uso2.getValorPago(), (long) uso1.getValorPago()));
+        for (int i = 0;i < usos.size();i++){
+            System.out.println(i+1 + "- Data: " + usos.get(i).getEntrada() + " - VALOR: "+usos.get(i).getValorPago());
+        }
+    }
+
+    public long mediaUsoMensalistaMesCorrente(int mes){
+        long usos=0;
+        long nclientes =0;
+        for (int i =0; i < clientes.length; i++) {
+                if(clientes[i].getTipo()==2){
+                    usos+=clientes[i].NumeroDeUsosMes(mes);
+                    nclientes++;
+                }
+            }
+        return usos/nclientes;
+    }
+
+    public long mediaArrecadacaoHorista(int mes){
+        long usos=0;
+        long nclientes =0;
+        for (int i =0; i < clientes.length; i++) {
+            if(clientes[i].getTipo()==1){
+                usos+=clientes[i].arrecadadoNoMes(mes);
+                nclientes++;
+            }
+        }
+        return usos/nclientes;
+    }
+
+
+
     public double arrecadacaoNoMes(int mes) {
         double totalMes = 0.0;
         for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {

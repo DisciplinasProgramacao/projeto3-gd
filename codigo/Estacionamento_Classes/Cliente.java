@@ -176,6 +176,8 @@ public class Cliente {
         return totalUsos;
     }
 
+    public int getTipo(){return tipo;
+    }
     /**
      * Calcula a arrecadação de um veículo com uma determinada placa.
      *
@@ -191,6 +193,14 @@ public class Cliente {
         }
     }
 
+
+    public float NumeroDeUsosMes(int mes){
+        float numeroDeUsos = 0;
+        for (int i=0;i < veiculo.length;i++){
+            numeroDeUsos+= veiculo[i].numeroDeUsosMes( mes);
+        }
+        return numeroDeUsos;
+    }
     /**
      * Calcula o total arrecadado por todos os veículos associados ao cliente.
      *
@@ -222,6 +232,15 @@ public class Cliente {
         return arrecadadoNoMes;
     }
 
+    public LinkedList<UsoDeVaga> relatorioTotalDecrescente(){
+        LinkedList<UsoDeVaga> usos = null;
+        for (Veiculo veiculo : veiculo) {
+            if (veiculo != null) {
+                usos.addAll(veiculo.getUsos());
+            };
+        }
+        return usos;
+    }
 
 
     /**

@@ -70,6 +70,7 @@ public class Veiculo {
 		return valor;
 	}
 
+
 	public String historico(LocalDate i, LocalDate f) {
 		StringBuilder historico = new StringBuilder("Veiculo{" +
 				"placa='" + placa + '\'' +
@@ -128,11 +129,24 @@ public class Veiculo {
 		}
 	}
 
+	public long numeroDeUsosMes(int mes){
+		long numeroUsos = 0;
+		for (int i = 0; i < usos.size();i++){
+			if (usos.get(i).getMes()==mes){
+				numeroUsos+=1;
+			}
+		}
+		return numeroUsos;
+	}
 
 	public int getTotalDeUsos() {
 		return usos.size();
 	}
 	public String getPlaca(){return placa;}
+
+	public LinkedList<UsoDeVaga> getUsos(){
+		return usos;
+	}
 
 	public void salvarVeiculo(String Id) {
 		try (PrintWriter writer = new PrintWriter(new FileWriter("Veiculos.txt", true))) {
