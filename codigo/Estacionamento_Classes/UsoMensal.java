@@ -32,7 +32,7 @@ public class UsoMensal extends UsoDeVaga {
                     0);
             System.out.println("Uso de vaga salvo com sucesso!");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erro ao salvar uso de vaga: " + e.getMessage());
         }
     }
 }
