@@ -54,16 +54,27 @@ public class App {
         scanner.close();
     }
 
-     public static void criarEstacionamento(Estacionamento[] estac){
+    public static void criarEstacionamento(Estacionamento[] estac) {
         Scanner scanner = new Scanner(System.in);
-        if(estac.length == 3){System.out.println("NUMERO MAXIMO ALCANCADO !!");}
-            else{
+    
+        try {
+            if (estac.length == 3) {
+                System.out.println("NUMERO MAXIMO ALCANCADO!!");
+            } else {
                 System.out.println("Entre com o nome estacionamento: ");
                 String nome = scanner.nextLine();
+    
+                for (Estacionamento estacionamento : estac) {
+                    if (estacionamento != null && estacionamento.getNome().equals(nome)) {
+                        throw new EstaJaCadastradoException("Estacionamento com o mesmo nome já existe.");
+                    }
+                }
+    
                 System.out.println("Entre com o numero de fileiras: ");
                 int fileiras = scanner.nextInt();
                 System.out.println("Entre com o nome vagas por fileiras: ");
                 int vagas = scanner.nextInt();
+    
                 if (estac == null) {
                     estac = new Estacionamento[1];
                     estac[0] = new Estacionamento(nome, fileiras, vagas);
@@ -73,10 +84,14 @@ public class App {
                         newEstac[i] = estac[i];
                     }
                     newEstac[estac.length] = new Estacionamento(nome, fileiras, vagas);
-                        estac = newEstac;
-                    }}
-
+                    estac = newEstac;
+                }
+            }
+        } catch (EstaJaCadastradoException e) {
+            System.out.println(e.getMessage());
+        }
     }
+    
 
     public static void cadastrarCliente(Estacionamento[] estac){
         Scanner scanner = new Scanner(System.in);
@@ -103,15 +118,25 @@ public class App {
                 }
                 System.out.print("Digite o nome do cliente: ");
                 String nomeCliente = scanner.nextLine();
-                if (esc2 == 1) {
-                    Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
-                    estac[esc-1].addCliente(novoCliente);
-                } else if (esc2 == 2) {
-                    Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
-                    estac[esc-1].addCliente(novoCliente);
-                } else if (esc2 == 3) {
-                    Cliente novoCliente = new Cliente(nomeCliente, esc2, esc3);
-                    estac[esc-1].addCliente(novoCliente);
+                try {
+                    for (Cliente cliente : estac[esc - 1].getClientes()) {
+                        if (cliente != null && cliente.getNome().equals(nomeCliente)) {
+                            throw new ClienteJaCadastradoException("Cliente já cadastrado.");
+                        }
+                    }
+            
+                    if (esc2 == 1) {
+                        Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
+                        estac[esc - 1].addCliente(novoCliente);
+                    } else if (esc2 == 2) {
+                        Cliente novoCliente = new Cliente(nomeCliente, esc2, 0);
+                        estac[esc - 1].addCliente(novoCliente);
+                    } else if (esc2 == 3) {
+                        Cliente novoCliente = new Cliente(nomeCliente, esc2, esc3);
+                        estac[esc - 1].addCliente(novoCliente);
+                    }
+                } catch (ClienteJaCadastradoException e) {
+                    System.out.println(e.getMessage());
                 }
     }
 
@@ -130,13 +155,36 @@ public class App {
                 System.out.println(cli[i].getNome() + " Codigo: "+ cli[i].getId());
             }
             codigCli = scanner.nextLine();
+            scanner.nextLine();
 
                 System.out.println("Insira a placa do veículo:");
                 String placa = scanner.nextLine();
-                System.out.println("Insira o modelo do veículo:");
-                String modelo = scanner.nextLine();
-                Veiculo novoVeiculo = new Veiculo(placa, modelo);
-                estac[esc].addVeiculo(novoVeiculo, codigCli);
+                try {
+                    verificarVeiculoCadastrado(estac, placa);
+                    System.out.println("Insira o modelo do veículo:");
+                    String modelo = scanner.next();
+                    Veiculo novoVeiculo = new Veiculo(placa, modelo);
+                    estac[esc].addVeiculo(novoVeiculo, codigCli);
+                } catch (VeiculoJaCadastradoException e) {
+                    System.out.println(e.getMessage());
+                }
+                
+    }
+
+    private static void verificarVeiculoCadastrado(Estacionamento[] estac, String placa) throws VeiculoJaCadastradoException {
+        for (Estacionamento estacionamento : estac) {
+            Cliente[] clientes = estacionamento.getClientes();
+            for (Cliente cliente : clientes) {
+                if (cliente != null) {
+                    Veiculo[] veiculos = cliente.getVeiculo();
+                    for (Veiculo veiculo : veiculos) {
+                        if (veiculo != null && veiculo.getPlaca().equals(placa)) {
+                            throw new VeiculoJaCadastradoException("Veículo já cadastrado.");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void estacionarVeiculo(Estacionamento[] estac){
