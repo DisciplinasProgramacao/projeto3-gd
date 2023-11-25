@@ -1,13 +1,9 @@
 import java.io.*;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Enum que define os serviços disponíveis.
@@ -186,9 +182,13 @@ public abstract class UsoDeVaga {
                     }
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (FileNotFoundException e) {
+        System.err.println("Arquivo de uso da vaga não encontrado: " + e.getMessage());
+       
+    } catch (IOException e) {
+        System.err.println("Erro de leitura do arquivo de uso da vaga: " + e.getMessage());
+        
+    }
         UsoDeVaga[] u = new UsoDeVaga[usos.size()];
         usos.toArray(u);
         return u;
