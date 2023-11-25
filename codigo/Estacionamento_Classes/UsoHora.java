@@ -22,7 +22,16 @@ public class UsoHora extends UsoDeVaga {
         this.saida = LocalDateTime.now();
         Duration tempoEsta = Duration.between(entrada, saida);
         long minutos = tempoEsta.toMinutes();
+
+        if (minutos < 0) {
+            throw new IllegalStateException("A data de saída é anterior à data de entrada.");
+        }
+
         double aPagar = minutos * VALOR_FRACAO;
+
+        if (aPagar < 0) {
+            throw new IllegalStateException("Erro no cálculo do valor a pagar.");
+        }
 
         this.valorPago = (aPagar > VALOR_MAXIMO) ? VALOR_MAXIMO : aPagar;
         this.valorPago += getValorServicos();
@@ -43,8 +52,7 @@ public class UsoHora extends UsoDeVaga {
                     0);
             System.out.println("Uso de vaga salvo com sucesso!");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao salvar uso de vaga.", e);
         }
     }
 }
-
