@@ -54,7 +54,7 @@ public class UsoTurno extends UsoDeVaga {
                     turno.ordinal()+1);  // Usando o método ordinal para obter o valor numérico do enum
             System.out.println("Uso de vaga salvo com sucesso!");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erro ao salvar uso de vaga: " + e.getMessage());
         }
     }
 
