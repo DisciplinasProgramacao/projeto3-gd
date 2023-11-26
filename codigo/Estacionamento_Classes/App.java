@@ -225,7 +225,7 @@ public class App {
         }
     
         int esc = scanner.nextInt() - 1;
-        scanner.nextLine(); 
+        scanner.nextLine();
     
         System.out.println("Insira a placa do carro:");
         String placaSaida = scanner.nextLine();
@@ -233,19 +233,29 @@ public class App {
         double valorAPagar = 0.0;
         for (Cliente cliente : estac[esc].getClientes()) {
             Veiculo[] veiculos = cliente.getVeiculo();
-            for (Veiculo veiculo : veiculos) {
-                if (veiculo != null && veiculo.getPlaca().equals(placaSaida)) {
-                    LinkedList<UsoDeVaga> usos = veiculo.getUsos();
-                    if (!usos.isEmpty()) {
-                        UsoDeVaga ultimoUso = usos.getLast();
-                        LocalDate entrada = ultimoUso.getEntrada();
-                        LocalDateTime saida = LocalDateTime.now();
-                        long minutosEstacionado = entrada.until(saida, ChronoUnit.MINUTES);
-                        valorAPagar = calcularValorPago(minutosEstacionado);
+            if (veiculos != null) { // Verificar se a lista de veículos não é nula
+                for (Veiculo veiculo : veiculos) {
+                    if (veiculo != null && veiculo.getPlaca().equals(placaSaida)) {
+                        LinkedList<UsoDeVaga> usos = veiculo.getUsos();
+                        if (!usos.isEmpty()) {
+                            UsoDeVaga ultimoUso = usos.getLast();
+                            LocalDate entrada = ultimoUso.getEntrada(); // Obter a data e hora de entrada
+                            LocalDateTime saida = LocalDateTime.now();
+                            long minutosEstacionado = ChronoUnit.MINUTES.between(entrada, saida);
+                            valorAPagar = calcularValorPago(minutosEstacionado);
+                        }
+                        break;
                     }
-                    break;
                 }
+            } else {
+                System.out.println("Cliente sem veículos registrados.");
             }
+        }
+    
+        if (valorAPagar > 0.0) {
+            System.out.println("TOTAL A PAGAR: R$" + String.format("%.2f", valorAPagar));
+        } else {
+            System.out.println("Veículo não encontrado ou sem uso registrado.");
         }
     
         if (valorAPagar > 0.0) {
