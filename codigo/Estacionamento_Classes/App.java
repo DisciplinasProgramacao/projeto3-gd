@@ -177,21 +177,27 @@ public class App {
     }
 
     private static void verificarVeiculoCadastrado(Estacionamento[] estac, String placa)
-            throws VeiculoJaCadastradoException {
-        for (Estacionamento estacionamento : estac) {
-            Cliente[] clientes = estacionamento.getClientes();
+        throws VeiculoJaCadastradoException {
+    for (Estacionamento estacionamento : estac) {
+        Cliente[] clientes = estacionamento.getClientes();
+
+        if (clientes != null) { 
             for (Cliente cliente : clientes) {
                 if (cliente != null) {
                     Veiculo[] veiculos = cliente.getVeiculo();
-                    for (Veiculo veiculo : veiculos) {
-                        if (veiculo != null && veiculo.getPlaca().equals(placa)) {
-                            throw new VeiculoJaCadastradoException("Veículo já cadastrado.");
+
+                    if (veiculos != null) { 
+                        for (Veiculo veiculo : veiculos) {
+                            if (veiculo != null && veiculo.getPlaca().equals(placa)) {
+                                throw new VeiculoJaCadastradoException("Veículo já cadastrado.");
+                            }
                         }
                     }
                 }
             }
         }
     }
+}
 
     public static void estacionarVeiculo(Estacionamento[] estac) {
         int esc;
