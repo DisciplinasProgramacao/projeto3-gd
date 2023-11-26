@@ -69,7 +69,7 @@ public class App {
         try {
             if (estac.length >= 3) {
                 System.out.println("NÚMERO MÁXIMO DE ESTACIONAMENTOS ALCANÇADO!!");
-                return; // Encerra a função se o limite já foi atingido
+                return; 
             }
 
             System.out.println("Entre com o nome do estacionamento:");
@@ -202,7 +202,7 @@ public class App {
             System.out.println(i + 1 + " " + estac[i].getNome());
         }
         esc = scanner.nextInt() - 1;
-        scanner.nextLine(); // Consumir a nova linha pendente
+        scanner.nextLine();
 
         System.out.println("Estacionar Veículo \nInsira a PLACA: ");
         placaEstacionar = scanner.nextLine();
@@ -219,7 +219,7 @@ public class App {
         }
     
         int esc = scanner.nextInt() - 1;
-        scanner.nextLine(); // Consumir a nova linha pendente
+        scanner.nextLine(); 
     
         System.out.println("Insira a placa do carro:");
         String placaSaida = scanner.nextLine();
@@ -234,11 +234,8 @@ public class App {
                         UsoDeVaga ultimoUso = usos.getLast();
                         LocalDate entrada = ultimoUso.getEntrada();
                         LocalDateTime saida = LocalDateTime.now();
-                        // Calcular o tempo decorrido em minutos
                         long minutosEstacionado = entrada.until(saida, ChronoUnit.MINUTES);
-                        // Calcular o valor a ser pago com base no tempo de uso
                         valorAPagar = calcularValorPago(minutosEstacionado);
-                        // Aqui pode-se fazer outras operações, como registrar o pagamento, etc.
                     }
                     break;
                 }
@@ -256,7 +253,6 @@ public class App {
         double valorPorFracao = 4.0; // Valor por fração de tempo (15 minutos)
         int minutosPorFracao = 15; // 15 minutos por fração
     
-        // Calcular o número de frações de 15 minutos
         int numeroFracoes = (int) Math.ceil((double) minutosEstacionado / minutosPorFracao);
     
         // Limitar o valor máximo a ser cobrado a R$50
@@ -264,14 +260,6 @@ public class App {
         return valorAPagar;
     }
 
-
-public static double calcularValor(long minutosEstacionado, double valorServicos) {
-    // Suponha uma tarifa de R$ 0,50 por minuto estacionado, além do valor dos serviços contratados
-    double tarifaMinuto = 0.50;
-    double valorAPagar = (minutosEstacionado * tarifaMinuto) + valorServicos;
-    return valorAPagar;
-}
-    
     public static void gerarRelatorios(Estacionamento[] estac) {
         Scanner scanner = new Scanner(System.in);
         int mesCorrente = LocalDate.now().getMonthValue();
