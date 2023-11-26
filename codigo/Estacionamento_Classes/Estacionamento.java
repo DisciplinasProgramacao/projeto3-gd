@@ -1,10 +1,10 @@
 import java.io.*;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class Estacionamento {
 
@@ -90,14 +90,16 @@ public class Estacionamento {
 
     public double totalArrecadado() {
         double total = 0.0;
-        for (double valor : arrecadacaoPorPlaca.values()) {
-            total += valor;
+        if (arrecadacaoPorPlaca != null) {
+            for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {
+                total += entry.getValue();
+            }
         }
         return total;
     }
 
     public void arrecadacaoTotalDecrescente(){
-        LinkedList<UsoDeVaga> usos = null;
+        LinkedList<UsoDeVaga> usos = new LinkedList<>();
         for (Cliente cliente : clientes) {
             if (cliente != null) {
                 usos.addAll(cliente.relatorioTotalDecrescente());
@@ -109,55 +111,96 @@ public class Estacionamento {
         }
     }
 
-    public long mediaUsoMensalistaMesCorrente(int mes){
-        long usos=0;
-        long nclientes =0;
-        for (int i =0; i < clientes.length; i++) {
-                if(clientes[i].getTipo()==2){
-                    usos+=clientes[i].NumeroDeUsosMes(mes);
-                    nclientes++;
-                }
-            }
-        return usos/nclientes;
-    }
-
-    public long mediaArrecadacaoHorista(int mes){
-        long usos=0;
-        long nclientes =0;
-        for (int i =0; i < clientes.length; i++) {
-            if(clientes[i].getTipo()==1){
-                usos+=clientes[i].arrecadadoNoMes(mes);
+    public long mediaUsoMensalistaMesCorrente(int mes) {
+        long usos = 0;
+        long nclientes = 0;
+        for (Cliente cliente : clientes) {
+            if (cliente.getTipo() == 2) { // Verifica se é cliente mensalista
+                usos += cliente.NumeroDeUsosMes(mes);
                 nclientes++;
             }
         }
-        return usos/nclientes;
+        // Verifica se há pelo menos um cliente mensalista antes de calcular a média
+        if (nclientes != 0) {
+            return usos / nclientes;
+        } else {
+            return 0; // Retorna 0 se não houver clientes mensalistas no mês
+        }
     }
 
-
+    public long mediaArrecadacaoHorista(int mes){
+    long arrecadacao = 0;
+    long nclientes = 0;
+    for (Cliente cliente : clientes) {
+        if (cliente.getTipo() == 1) { // Verifica se é cliente horista
+            arrecadacao += cliente.arrecadadoNoMes(mes);
+            nclientes++;
+        }
+    }
+    // Verifica se há pelo menos um cliente horista antes de calcular a média
+    if (nclientes != 0) {
+        return arrecadacao / nclientes;
+    } else {
+        return 0; // Retorna 0 se não houver clientes horistas no mês
+    }
+}
 
     public double arrecadacaoNoMes(int mes) {
         double totalMes = 0.0;
-        for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {
-            String chave = entry.getKey();
-            int mesEntrada = Integer.parseInt(chave.substring(4, 6));
-            if (mesEntrada == mes) {
-                totalMes += entry.getValue();
+        if (arrecadacaoPorPlaca != null) {
+            for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {
+                String chave = entry.getKey();
+                int mesEntrada;
+                try {
+                    mesEntrada = Integer.parseInt(chave.substring(4, 6));
+                } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+                    mesEntrada = -1; // Valor inválido para garantir que não seja adicionado ao total
+                }
+                if (mesEntrada == mes) {
+                    totalMes += entry.getValue();
+                }
             }
         }
         return totalMes;
     }
 
     public double valorMedioPorUso() {
-        if (arrecadacaoPorPlaca.size() == 0) {
+        if (arrecadacaoPorPlaca == null || arrecadacaoPorPlaca.isEmpty()) {
             return 0.0;
         }
         return totalArrecadado() / arrecadacaoPorPlaca.size();
     }
 
     public String top5Clientes(int mes) {
-        // Falta colocar a implementacao
-        return "Top 5 clientes do mês " + mes;
+        Cliente[] topClientes = new Cliente[5];
+
+        for (Cliente c : clientes) {
+            if (c != null) {
+                double valorDoCliente = c.arrecadadoNoMes(mes);
+
+                for (int i = 0; i < 5; i++) {
+                    if (topClientes[i] == null || valorDoCliente > topClientes[i].arrecadadoNoMes(mes)) {
+                        for (int j = 4; j > i; j--) {
+                            topClientes[j] = topClientes[j - 1];
+                        }
+                        topClientes[i] = c;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Agora topClientes contém os 5 principais clientes
+        String[] nomesTopClientes = new String[5];
+        for (int i = 0; i < 5; i++) {
+            if (topClientes[i] != null) {
+                nomesTopClientes[i] = topClientes[i].getNome();
+            }
+        }
+
+        return Arrays.toString(nomesTopClientes);
     }
+
 
     private Cliente buscarClientePorId(String id) {
         for (Cliente cliente : clientes) {
@@ -218,5 +261,7 @@ public class Estacionamento {
         estac.toArray(esta);
         return esta;
     }
+
+    
 
 }
