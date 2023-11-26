@@ -2,9 +2,12 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class App {
@@ -208,28 +211,66 @@ public class App {
     }
 
     public static void sairVeiculo(Estacionamento[] estac) {
-        int esc;
         Scanner scanner = new Scanner(System.in);
-        String placaSaida;
-        Double valor;
     
         System.out.println("Selecione o estacionamento:");
         for (int i = 0; i < estac.length; i++) {
             System.out.println(i + 1 + " " + estac[i].getNome());
         }
-        esc = scanner.nextInt() - 1;
+    
+        int esc = scanner.nextInt() - 1;
         scanner.nextLine(); // Consumir a nova linha pendente
     
         System.out.println("Insira a placa do carro:");
-        placaSaida = scanner.nextLine();
+        String placaSaida = scanner.nextLine();
     
-        try {
-            valor = estac[esc].sair(placaSaida);
-            System.out.println("TOTAL A PAGAR: R$" + String.format("%.2f", valor));
-        } catch (RuntimeException e) {
-            System.out.println("Placa inexistente ou inválida: " + e.getMessage());
+        double valorAPagar = 0.0;
+        for (Cliente cliente : estac[esc].getClientes()) {
+            Veiculo[] veiculos = cliente.getVeiculo();
+            for (Veiculo veiculo : veiculos) {
+                if (veiculo != null && veiculo.getPlaca().equals(placaSaida)) {
+                    LinkedList<UsoDeVaga> usos = veiculo.getUsos();
+                    if (!usos.isEmpty()) {
+                        UsoDeVaga ultimoUso = usos.getLast();
+                        LocalDate entrada = ultimoUso.getEntrada();
+                        LocalDateTime saida = LocalDateTime.now();
+                        // Calcular o tempo decorrido em minutos
+                        long minutosEstacionado = entrada.until(saida, ChronoUnit.MINUTES);
+                        // Calcular o valor a ser pago com base no tempo de uso
+                        valorAPagar = calcularValorPago(minutosEstacionado);
+                        // Aqui pode-se fazer outras operações, como registrar o pagamento, etc.
+                    }
+                    break;
+                }
+            }
+        }
+    
+        if (valorAPagar > 0.0) {
+            System.out.println("TOTAL A PAGAR: R$" + String.format("%.2f", valorAPagar));
+        } else {
+            System.out.println("Veículo não encontrado ou sem uso registrado.");
         }
     }
+    
+    public static double calcularValorPago(long minutosEstacionado) {
+        double valorPorFracao = 4.0; // Valor por fração de tempo (15 minutos)
+        int minutosPorFracao = 15; // 15 minutos por fração
+    
+        // Calcular o número de frações de 15 minutos
+        int numeroFracoes = (int) Math.ceil((double) minutosEstacionado / minutosPorFracao);
+    
+        // Limitar o valor máximo a ser cobrado a R$50
+        double valorAPagar = Math.min(numeroFracoes * valorPorFracao, 50.0);
+        return valorAPagar;
+    }
+
+
+public static double calcularValor(long minutosEstacionado, double valorServicos) {
+    // Suponha uma tarifa de R$ 0,50 por minuto estacionado, além do valor dos serviços contratados
+    double tarifaMinuto = 0.50;
+    double valorAPagar = (minutosEstacionado * tarifaMinuto) + valorServicos;
+    return valorAPagar;
+}
     
     public static void gerarRelatorios(Estacionamento[] estac) {
         Scanner scanner = new Scanner(System.in);
