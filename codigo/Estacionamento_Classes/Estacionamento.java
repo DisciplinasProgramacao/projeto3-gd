@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Observable;
 
-public class Estacionamento {
+public class Estacionamento extends Observable {
 
     private String nome;
     private Cliente[] clientes;
@@ -262,6 +263,28 @@ public class Estacionamento {
         return esta;
     }
 
+     public void notificarAtualizacao(int mesAtual) {
+        setChanged();
+        notifyObservers(mesAtual);
+    }
+
     
+    public double mediaArrecadacaoHorista(int mes) {
+        double arrecadacao = 0.0;
+        long nclientes = 0;
+    
+        for (Cliente cliente : clientes) {
+            if (cliente.getTipo() == 1) { 
+                arrecadacao += cliente.arrecadadoNoMes(mes);
+                nclientes++;
+            }
+        }
+    
+        if (nclientes != 0) {
+            return arrecadacao / nclientes;
+        } else {
+            return 0.0; 
+        }
+    }
 
 }
