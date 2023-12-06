@@ -15,6 +15,7 @@ public class Estacionamento extends Observable {
     private int quantFileiras;
     private int vagasPorFileira;
     private Map<String, Double> arrecadacaoPorPlaca;
+    private ValorTotalArrecadadoObserver observer;
     public Estacionamento(String nome, int fileiras, int vagasPorFila) {
         this.nome = nome;
         this.quantFileiras = fileiras;
@@ -32,6 +33,8 @@ public class Estacionamento extends Observable {
         this.quantFileiras = fileiras;
         this.vagasPorFileira = vagasPorFileira;
         this.clientes=Cliente.carregarClientes(nome);
+        this.observer = new ValorTotalArrecadadoObserver();
+        this.addObserver(observer);
         for (int i = 0; i < clientes.length;i++){
             Veiculo[] vec = clientes[i].getVeiculo();
             for (int j = 0; j < vec.length;j++){
@@ -129,7 +132,8 @@ public class Estacionamento extends Observable {
                 }
             }
         }
-    
+        this.notificarAtualizacao(valorTotalReal);
+
         return valorTotalReal;
     }
 
@@ -289,6 +293,11 @@ public class Estacionamento extends Observable {
         Estacionamento[] esta = new Estacionamento[estac.size()];
         estac.toArray(esta);
         return esta;
+    }
+
+    public void notificarAtualizacao(double novoValor) {
+        setChanged();
+        notifyObservers(novoValor);
     }
 
      public void notificarAtualizacao(int mesAtual) {
