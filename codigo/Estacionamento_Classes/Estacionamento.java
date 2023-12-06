@@ -89,14 +89,48 @@ public class Estacionamento extends Observable {
         return 0.0;
     }
 
-    public double totalArrecadado() {
-        double total = 0.0;
-        if (arrecadacaoPorPlaca != null) {
-            for (Map.Entry<String, Double> entry : arrecadacaoPorPlaca.entrySet()) {
-                total += entry.getValue();
+        public double calcularValorMedioPorUso(Estacionamento[] estacionamentos) {
+        double totalValorPago = 0.0;
+        int totalUsos = 0;
+    
+        for (Estacionamento estacionamento : estacionamentos) {
+            Cliente[] clientes = estacionamento.getClientes();
+            for (Cliente cliente : clientes) {
+                Veiculo[] veiculos = cliente.getVeiculo();
+                for (Veiculo veiculo : veiculos) {
+                    LinkedList<UsoDeVaga> usos = veiculo.getUsos();
+                    for (UsoDeVaga uso : usos) {
+                        totalValorPago += uso.getValorPago();
+                        totalUsos++;
+                    }
+                }
             }
         }
-        return total;
+    
+        if (totalUsos > 0) {
+            return totalValorPago / totalUsos;
+        } else {
+            return 0.0;
+        }
+    }
+
+    public double calcularValorTotal(Estacionamento estacionamento) {
+        double valorTotalReal = 0.0;
+        Cliente[] clientes = estacionamento.getClientes();
+    
+        for (Cliente cliente : clientes) {
+            Veiculo[] veiculos = cliente.getVeiculo();
+            for (Veiculo veiculo : veiculos) {
+                LinkedList<UsoDeVaga> usos = veiculo.getUsos();
+                for (UsoDeVaga uso : usos) {
+                    double valorPago = uso.getValorPago();
+                    double valorServicos = uso.getValorServicos();
+                    valorTotalReal += valorPago + valorServicos;
+                }
+            }
+        }
+    
+        return valorTotalReal;
     }
 
     public void arrecadacaoTotalDecrescente(){
@@ -165,12 +199,6 @@ public class Estacionamento extends Observable {
         return totalMes;
     }
 
-    public double valorMedioPorUso() {
-        if (arrecadacaoPorPlaca == null || arrecadacaoPorPlaca.isEmpty()) {
-            return 0.0;
-        }
-        return totalArrecadado() / arrecadacaoPorPlaca.size();
-    }
 
     public String top5Clientes(int mes) {
         Cliente[] topClientes = new Cliente[5];
@@ -269,22 +297,5 @@ public class Estacionamento extends Observable {
     }
 
     
-    public double mediaArrecadacaoHorista(int mes) {
-        double arrecadacao = 0.0;
-        long nclientes = 0;
-    
-        for (Cliente cliente : clientes) {
-            if (cliente.getTipo() == 1) { 
-                arrecadacao += cliente.arrecadadoNoMes(mes);
-                nclientes++;
-            }
-        }
-    
-        if (nclientes != 0) {
-            return arrecadacao / nclientes;
-        } else {
-            return 0.0; 
-        }
-    }
 
 }
