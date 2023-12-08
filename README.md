@@ -8,11 +8,9 @@ Escreva um ou dois parágrafos resumindo o objetivo do seu projeto.
 * Augusto de Souza Andrade
 * Pedro Arthur Oliveira Silva
 * Davi Andrade Rocha Melo de Oliveira
-* Nome completo do aluno 4
-* Nome completo do aluno 4
 
 ## Professores responsáveis
 
 * João Caram Santos de Oliveira
-* Nome completo do professor 2
+
 
