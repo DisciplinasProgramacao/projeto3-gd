@@ -1,21 +1,24 @@
-import java.util.Observable;
-import java.util.Observer;
-
-public class MediaHrMes implements Observer {
-
+public class MeidaHrMes implements Observer {
     private Estacionamento estacionamento;
+    private int mes;
 
-    public MediaHrMes(Estacionamento estacionamento) {
+    public MeidaHrMes(Estacionamento estacionamento, int mes) {
         this.estacionamento = estacionamento;
-        this.estacionamento.addObserver(this);
+        this.mes = mes;
+        estacionamento.addObserver(this);
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Estacionamento && arg instanceof Integer) {
-            int mesAtual = (int) arg;
-            long arrecadacaoMediaHoristas = estacionamento.mediaArrecadacaoHorista(mesAtual);
-            System.out.println("Arrecadação média dos clientes horistas no mês " + mesAtual + ": R$" + arrecadacaoMediaHoristas);
-        }
+    public void update(String message) {
+        calcularArrecadacaoMediaClientesHoristas();
+    }
+
+    private void calcularArrecadacaoMediaClientesHoristas() {
+        long mediaArrecadacaoHorista = estacionamento.mediaArrecadacaoHorista(mes);
+        System.out.println("Arrecadação média dos clientes horistas no mês " + mes + ": " + mediaArrecadacaoHorista);
+    }
+
+    public void pararObservacao() {
+        estacionamento.removeObserver(this);
     }
 }
