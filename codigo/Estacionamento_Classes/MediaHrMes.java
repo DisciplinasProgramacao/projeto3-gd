@@ -1,8 +1,8 @@
-public class MeidaHrMes implements Observer {
+public class MediaHrMes implements Observer {
     private Estacionamento estacionamento;
     private int mes;
 
-    public MeidaHrMes(Estacionamento estacionamento, int mes) {
+    public MediaHrMes(Estacionamento estacionamento, int mes) {
         this.estacionamento = estacionamento;
         this.mes = mes;
         estacionamento.addObserver(this);
