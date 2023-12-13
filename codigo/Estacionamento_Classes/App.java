@@ -17,6 +17,7 @@ public class App {
         int escolha = 99;
         while (escolha != 0) {
             scanner.nextLine();
+            System.out.println(estac[0].clientes());
             System.out.println("########################################");
             System.out.println("##------| Xulambs Parking |-----------##");
             System.out.println("########################################");
@@ -27,7 +28,8 @@ public class App {
             System.out.println("#  4. Estacionar Veiculo               #");
             System.out.println("#  5. Sair Veiculo                     #");
             System.out.println("#  6. Gerar Relatorios                 #");
-            System.out.println("#  7. Sair                             #");
+            System.out.println("#  7. Gerarenciar clientes             #");
+            System.out.println("#  8. Sair                             #");
             System.out.println("########################################");
             escolha = scanner.nextInt();
             int esc = 0;
@@ -51,8 +53,10 @@ public class App {
                 case 6:
                     gerarRelatorios(estac);
                     break;
-
                 case 7:
+                    gerenciarClientes(estac);
+
+                case 8:
                     System.out.println("Saindo do programa.");
                     System.exit(0);
                     break;
@@ -126,7 +130,7 @@ public class App {
         try {
             for (Cliente cliente : estac[esc - 1].getClientes()) {
                 if (cliente != null && cliente.getNome().equals(nomeCliente)) {
-                    throw new ClienteJaCadastradoException("Cliente já cadastrado.");
+                    throw new ClienteJaCadastradoException("Cliente já cadastrado");
                 }
             }
 
@@ -278,31 +282,71 @@ public class App {
 
     public static void gerarRelatorios(Estacionamento[] estac) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Selecione o estacionamento:");
+        for (int i = 0; i < estac.length; i++)
+            System.out.println(i + 1 + " " + estac[i].getNome());
+       int  esc = scanner.nextInt();
         int mesCorrente = LocalDate.now().getMonthValue();
 
         System.out.println("======= Relatório do Estacionamento =======");
-        for (Estacionamento estacionamento : estac) {
+
             try {
-                System.out.println("Estacionamento: " + estacionamento.getNome());
-                System.out.println("Total arrecadado: " + estacionamento.totalArrecadado());
-                System.out.println("Arrecadação no mês corrente: " + estacionamento.arrecadacaoNoMes(mesCorrente));
-                System.out.println("Valor médio por uso: " + estacionamento.valorMedioPorUso());
+                System.out.println("Estacionamento: " + estac[esc-1].getNome());
+                System.out.println("Total arrecadado: " + estac[esc-1].calcularValorTotal());
+                System.out.println("Arrecadação no mês corrente: " + estac[esc-1].arrecadacaoNoMes(mesCorrente));
+                System.out.println("Valor médio por uso: " + estac[esc-1].calcularValorMedioPorUso());
                 System.out.println("Média de uso mensalista no mês corrente: "
-                        + estacionamento.mediaUsoMensalistaMesCorrente(mesCorrente));
+                        + estac[esc-1].mediaUsoMensalistaMesCorrente(mesCorrente));
                 System.out.println("Média de arrecadação de horistas no mês corrente: "
-                        + estacionamento.mediaArrecadacaoHorista(mesCorrente));
-                System.out.println("Top 5 clientes no mês corrente: " + estacionamento.top5Clientes(mesCorrente));
+                        + estac[esc-1].mediaArrecadacaoHorista(mesCorrente));
+                System.out.println("Top 5 clientes no mês corrente: " + estac[esc-1].top5Clientes(mesCorrente));
                 System.out.println("Relatório de arrecadação decrescente:");
-                estacionamento.arrecadacaoTotalDecrescente();
+                estac[esc-1].arrecadacaoTotalDecrescente();
                 System.out.println("-----------------------------------------");
             } catch (NullPointerException e) {
                 System.out.println(
-                        "Ocorreu um erro ao gerar relatórios para o estacionamento " + estacionamento.getNome());
+                        "Ocorreu um erro ao gerar relatórios para o estacionamento " + estac[esc-1].getNome());
                 System.out.println("Detalhes do erro: " + e.getMessage());
 
             } catch (Exception e) {
                 System.out.println("Ocorreu um erro inesperado: " + e.getMessage());
             }
-        }
     }
+
+    public static void gerenciarClientes(Estacionamento[] estac){
+        int esc2 = 0;
+        int esc3 = 0;
+        String txt = "text";
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Selecione o estacionamento:");
+        for (int i = 0; i < estac.length; i++)
+            System.out.println(i + 1 + " " + estac[i].getNome());
+        int  esc = scanner.nextInt();
+
+        System.out.println("######## CLIENTES CADASTRADOS ######### ");
+        txt = estac[esc-1].clientes();
+        System.out.println(txt);
+        System.out.println("####### ALTERAR TIPO DE USUARIO #########");
+        System.out.println("SELECIONE O CODIGO DO USUARIO QUE DESEJA ALTERAR:");
+        scanner.nextLine();
+        String codigo = scanner.nextLine();
+        System.out.println("Escolha a opção:");
+        System.out.println("#1# para Cliente Horista.");
+        System.out.println("#2# para Cliente Mensalista.");
+        System.out.println("#3# para Cliente Turno.");
+        System.out.println("#4# para Cliente Anonimo.");
+        esc2 = scanner.nextInt();
+        scanner.nextLine();
+        if (esc2 == 3) {
+            System.out.println("Escolha o turno desejado:");
+            System.out.println("#1# MANHA (8:00 - 12:00).");
+            System.out.println("#2# TARDE (12:01 - 18:00).");
+            System.out.println("#3# NOITE (18:01 - 23:59).");
+            esc3 = scanner.nextInt();
+        };
+        estac[esc-1].aterarTipoCliente(codigo, esc2, esc3);
+
+    }
+
+
 }

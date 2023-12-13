@@ -24,30 +24,27 @@ public class Estacionamento {
         gerarVagas(quantFileiras,vagasPorFileira);
         salvarEstacionamento();
     }
-
     public Estacionamento(Vaga[] vaga, int fileiras, int vagasPorFileira, String Nome){
+        Cliente cli = new Cliente();
         this.nome=Nome;
         this.vagas = vaga;
         this.quantFileiras = fileiras;
         this.vagasPorFileira = vagasPorFileira;
-        this.clientes=Cliente.carregarClientes(nome);
+        this.clientes=cli.carregarClientes(nome);
         for (int i = 0; i < clientes.length;i++){
             Veiculo[] vec = clientes[i].getVeiculo();
+            if (clientes[i].getVeiculo().length!=0){
             for (int j = 0; j < vec.length;j++){
                 vec[j].setUsos(UsoDeVaga.carregarUsos(vec[j].getPlaca(), vagas));
-            }
+            }}
         }
     }
-
-
-
     public void addVeiculo(Veiculo veiculo, String idCli) {
         Cliente cliente = buscarClientePorId(idCli);
         if (cliente != null) {
             cliente.addVeiculo(veiculo);
         }
     }
-
     public void addCliente(Cliente cliente) {
         Cliente[] novosClientes = new Cliente[clientes.length + 1];
         System.arraycopy(clientes, 0, novosClientes, 0, clientes.length);
@@ -55,7 +52,6 @@ public class Estacionamento {
         clientes = novosClientes;
         clientes[clientes.length-1].salvarCliente(nome);
     }
-
     private void gerarVagas(int quantFileiras, int vagasPorFileira) {
         vagas = new Vaga[quantFileiras * vagasPorFileira];
 
@@ -66,8 +62,6 @@ public class Estacionamento {
             }
         }
     }
-
-
     public void estacionar(String placa) {
         Vaga vagaLivre = encontrarVagaLivre();
         if (vagaLivre != null) {
@@ -77,7 +71,6 @@ public class Estacionamento {
             arrecadacaoPorPlaca.put(placa, 0.0);
         }
     }
-
     public double sair(String placa) {
         for (int i=0 ; i < clientes.length;i++){
             Veiculo[] vec = clientes[i].getVeiculo();
@@ -87,52 +80,24 @@ public class Estacionamento {
             }}
         return 0.0;
     }
-
-        public double calcularValorMedioPorUso(Estacionamento[] estacionamentos) {
+    public double calcularValorMedioPorUso() {
         double totalValorPago = 0.0;
         int totalUsos = 0;
-    
-        for (Estacionamento estacionamento : estacionamentos) {
-            Cliente[] clientes = estacionamento.getClientes();
-            for (Cliente cliente : clientes) {
-                Veiculo[] veiculos = cliente.getVeiculo();
-                for (Veiculo veiculo : veiculos) {
-                    LinkedList<UsoDeVaga> usos = veiculo.getUsos();
-                    for (UsoDeVaga uso : usos) {
-                        totalValorPago += uso.getValorPago();
-                        totalUsos++;
-                    }
-                }
+            for (Cliente cliente : clientes){
+               totalValorPago+= cliente.arrecadadoTotal();
+               totalUsos++;
             }
-        }
-    
-        if (totalUsos > 0) {
-            return totalValorPago / totalUsos;
-        } else {
-            return 0.0;
-        }
+        return totalUsos/totalUsos;
     }
-
-    public double calcularValorTotal(Estacionamento estacionamento) {
-        double valorTotalReal = 0.0;
-        Cliente[] clientes = estacionamento.getClientes();
-    
-        for (Cliente cliente : clientes) {
-            Veiculo[] veiculos = cliente.getVeiculo();
-            for (Veiculo veiculo : veiculos) {
-                LinkedList<UsoDeVaga> usos = veiculo.getUsos();
-                for (UsoDeVaga uso : usos) {
-                    double valorPago = uso.getValorPago();
-                    double valorServicos = uso.getValorServicos();
-                    valorTotalReal += valorPago + valorServicos;
-                }
-            }
+    public double calcularValorTotal() {
+        double totalValorPago = 0.0;
+        for (Cliente cliente : clientes){
+            totalValorPago+= cliente.arrecadadoTotal();
         }
-        this.notificarAtualizacao(valorTotalReal);
+       // this.notificarAtualizacao(valorTotalReal);
 
-        return valorTotalReal;
+        return totalValorPago;
     }
-
     public void arrecadacaoTotalDecrescente(){
         LinkedList<UsoDeVaga> usos = new LinkedList<>();
         for (Cliente cliente : clientes) {
@@ -145,7 +110,6 @@ public class Estacionamento {
             System.out.println(i+1 + "- Data: " + usos.get(i).getEntrada() + " - VALOR: "+usos.get(i).getValorPago());
         }
     }
-
     public long mediaUsoMensalistaMesCorrente(int mes) {
         long usos = 0;
         long nclientes = 0;
@@ -162,7 +126,6 @@ public class Estacionamento {
             return 0; // Retorna 0 se não houver clientes mensalistas no mês
         }
     }
-
     public long mediaArrecadacaoHorista(int mes){
     long arrecadacao = 0;
     long nclientes = 0;
@@ -179,7 +142,6 @@ public class Estacionamento {
         return 0; // Retorna 0 se não houver clientes horistas no mês
     }
 }
-
     public double arrecadacaoNoMes(int mes) {
         double totalMes = 0.0;
         if (arrecadacaoPorPlaca != null) {
@@ -198,8 +160,6 @@ public class Estacionamento {
         }
         return totalMes;
     }
-
-
     public String top5Clientes(int mes) {
         Cliente[] topClientes = new Cliente[5];
 
@@ -229,8 +189,6 @@ public class Estacionamento {
 
         return Arrays.toString(nomesTopClientes);
     }
-
-
     private Cliente buscarClientePorId(String id) {
         for (Cliente cliente : clientes) {
             if (cliente.getId().equals(id)) {
@@ -239,8 +197,6 @@ public class Estacionamento {
         }
         return null;
     }
-
-
     private Vaga encontrarVagaLivre() {
         for (Vaga vaga : vagas) {
             if (vaga.disponivel()) {
@@ -249,11 +205,9 @@ public class Estacionamento {
         }
         return null;
     }
-
     public String getNome() {
         return nome;
     }
-
     public Cliente[] getClientes(){
         return clientes;
     }
@@ -267,7 +221,6 @@ public class Estacionamento {
 
 
     }
-
     public static Estacionamento[] carregarEstacionamento() {
         LinkedList<Estacionamento> estac = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("Estacionamento.txt"))) {
@@ -290,8 +243,21 @@ public class Estacionamento {
         estac.toArray(esta);
         return esta;
     }
+    public String clientes(){
+        System.out.println("test"+ clientes.length);
+        String txt="";
+        for (int i =0;i < clientes.length;i++) {
+            txt += clientes[i].perfil();
+            System.out.println(txt);
+        }
 
-
-    
-
+        return txt;
+    }
+    public void aterarTipoCliente(String codCliente,int esc2, int esc3) {
+        for (Cliente cliente : clientes){
+            if (cliente.getId()==codCliente){
+                cliente.setTipo(esc2,esc3);
+            }
+        }
+    }
 }

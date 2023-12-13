@@ -279,11 +279,13 @@ public class Cliente {
                     String id = parts[1];
                     String Estacionamento = parts[2];
                     int tipo = Integer.parseInt(parts[3]);
-                    int turno = Integer.parseInt(parts[4]);
+                    int turno = 0;
+                    turno = Integer.parseInt(parts[4]);
                     if(Estacionamento == nomeEstacionamento ){
                         Veiculo[] vec = Veiculo.carregarVeiculos(id);
                         Cliente cli = new Cliente(nome, id, vec, tipo, turno);
                         clientes.add(cli);}
+
                 }
             }
         } catch (IOException e) {
@@ -300,4 +302,12 @@ public class Cliente {
             id = String.format("%06d", num);
         return id;
     }
+
+    public String perfil(){
+        String txt = "#######################\nNOME: "+ nome +"\nTIPO: "+ IU.getNome()+ "\nCODIGO: "+ id;
+        return txt;
+    }
+
+
+
 }
