@@ -274,19 +274,16 @@ public class Cliente {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
-                if (parts.length == 5) {
+
                     String nome = parts[0];
                     String id = parts[1];
                     String Estacionamento = parts[2];
                     int tipo = Integer.parseInt(parts[3]);
-                    int turno = 0;
-                    turno = Integer.parseInt(parts[4]);
-                    if(Estacionamento == nomeEstacionamento ){
+                    int turno = Integer.parseInt(parts[4]);
+                    if(Estacionamento.equals(nomeEstacionamento)){
                         Veiculo[] vec = Veiculo.carregarVeiculos(id);
                         Cliente cli = new Cliente(nome, id, vec, tipo, turno);
                         clientes.add(cli);}
-
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -304,7 +301,7 @@ public class Cliente {
     }
 
     public String perfil(){
-        String txt = "#######################\nNOME: "+ nome +"\nTIPO: "+ IU.getNome()+ "\nCODIGO: "+ id;
+        String txt = "#######################\nNOME: "+ nome +"\nTIPO: "+ IU.getNome()+ "\nCODIGO: "+ id+"\n";
         return txt;
     }
 

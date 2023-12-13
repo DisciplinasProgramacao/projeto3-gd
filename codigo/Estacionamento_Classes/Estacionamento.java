@@ -25,19 +25,12 @@ public class Estacionamento {
         salvarEstacionamento();
     }
     public Estacionamento(Vaga[] vaga, int fileiras, int vagasPorFileira, String Nome){
-        Cliente cli = new Cliente();
         this.nome=Nome;
         this.vagas = vaga;
         this.quantFileiras = fileiras;
         this.vagasPorFileira = vagasPorFileira;
-        this.clientes=cli.carregarClientes(nome);
-        for (int i = 0; i < clientes.length;i++){
-            Veiculo[] vec = clientes[i].getVeiculo();
-            if (clientes[i].getVeiculo().length!=0){
-            for (int j = 0; j < vec.length;j++){
-                vec[j].setUsos(UsoDeVaga.carregarUsos(vec[j].getPlaca(), vagas));
-            }}
-        }
+        this.clientes=Cliente.carregarClientes(nome);
+
     }
     public void addVeiculo(Veiculo veiculo, String idCli) {
         Cliente cliente = buscarClientePorId(idCli);
@@ -244,19 +237,17 @@ public class Estacionamento {
         return esta;
     }
     public String clientes(){
-        System.out.println("test"+ clientes.length);
         String txt="";
         for (int i =0;i < clientes.length;i++) {
             txt += clientes[i].perfil();
-            System.out.println(txt);
         }
 
         return txt;
     }
     public void aterarTipoCliente(String codCliente,int esc2, int esc3) {
-        for (Cliente cliente : clientes){
-            if (cliente.getId()==codCliente){
-                cliente.setTipo(esc2,esc3);
+        for (int i = 0;i< clientes.length;i++){
+            if (clientes[i].getId().equals(codCliente)){
+                clientes[i].setTipo(esc2,esc3);
             }
         }
     }

@@ -15,9 +15,8 @@ public class App {
         Estacionamento estac[] = Estacionamento.carregarEstacionamento();
         Scanner scanner = new Scanner(System.in);
         int escolha = 99;
-        while (escolha != 0) {
+        while (escolha != 8) {
             scanner.nextLine();
-            System.out.println(estac[0].clientes());
             System.out.println("########################################");
             System.out.println("##------| Xulambs Parking |-----------##");
             System.out.println("########################################");
@@ -55,7 +54,7 @@ public class App {
                     break;
                 case 7:
                     gerenciarClientes(estac);
-
+                    break;
                 case 8:
                     System.out.println("Saindo do programa.");
                     System.exit(0);
@@ -344,6 +343,7 @@ public class App {
             System.out.println("#3# NOITE (18:01 - 23:59).");
             esc3 = scanner.nextInt();
         };
+
         estac[esc-1].aterarTipoCliente(codigo, esc2, esc3);
 
     }
