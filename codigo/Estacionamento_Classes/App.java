@@ -16,6 +16,7 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         int escolha = 99;
         while (escolha != 8) {
+            //comentario
             scanner.nextLine();
             System.out.println("########################################");
             System.out.println("##------| Xulambs Parking |-----------##");
