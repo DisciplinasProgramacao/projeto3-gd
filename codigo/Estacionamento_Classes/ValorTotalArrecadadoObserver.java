@@ -17,7 +17,7 @@ public class ValorTotalArrecadadoObserver implements Observer {
     public void update(Observable observable, Object arg) {
         if (observable instanceof Estacionamento) {
             Estacionamento est = (Estacionamento) observable;
-            double novoValor = est.calcularValorTotal(est);
+            double novoValor = est.calcularValorTotal();
             if (this.valorTotalArrecadado < novoValor) {
                 System.out.println("Valor total arrecadado aumentou de " + this.valorTotalArrecadado + " para " + novoValor);
                 this.valorTotalArrecadado = novoValor;
